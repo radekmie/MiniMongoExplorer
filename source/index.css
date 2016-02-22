@@ -1,0 +1,48 @@
+*, *:after, *:before {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin:  0;
+    padding: 0;
+
+    font-size:   12px;
+    line-height: 15px;
+    font-family: monospace;
+}
+
+code[contenteditable] {
+    outline: none;
+}
+
+code:after {
+    content: attr(data-after);
+}
+
+code:before {
+    content: attr(data-before);
+}
+
+pre {
+    margin: 10px 0;
+}
+
+pre:last-of-type {
+    overflow: auto;
+
+    margin-bottom: 0;
+    padding-right: 15px;
+
+    max-width:  500px;
+    max-height: 430px;
+}
+
+pre:last-of-type code {
+    display: block;
+}
+
+select {
+    height: 20px;
+
+    min-width: 100%;
+}

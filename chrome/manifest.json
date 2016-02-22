@@ -1,0 +1,38 @@
+{
+    "name": "MiniMongoExplorer",
+    "version": "0.1.0",
+
+    "icons": {
+        "16": "images/icon16.png",
+        "32": "images/icon32.png",
+        "64": "images/icon64.png"
+    },
+
+    "permissions": [
+        "<all_urls>",
+        "activeTab",
+        "tabs"
+    ],
+
+    "background": {
+        "persistent": false,
+        "scripts": [
+            "background.js"
+        ]
+    },
+
+    "page_action": {
+        "default_icon": {
+            "16": "images/icon16.png",
+            "32": "images/icon32.png",
+            "64": "images/icon64.png"
+        },
+
+        "default_title": "MiniMongoExplorer",
+        "default_popup": "popup.html"
+    },
+
+    "manifest_version": 2,
+    "minimum_chrome_version": "26",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
