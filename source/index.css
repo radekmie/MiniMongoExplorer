@@ -6,6 +6,8 @@ body, html {
     margin:  0;
     padding: 0;
 
+    width: 500px;
+
     font-size:   12px;
     line-height: 15px;
     font-family: monospace;
@@ -24,16 +26,12 @@ code:before {
 }
 
 pre {
-    margin: 10px 0;
+    margin: 10px 0 0;
 }
 
 pre:last-of-type {
     overflow: auto;
-
     margin-bottom: 0;
-    padding-right: 15px;
-
-    max-width:  500px;
     max-height: 430px;
 }
 
@@ -43,6 +41,5 @@ pre:last-of-type code {
 
 select {
     height: 20px;
-
     min-width: 100%;
 }

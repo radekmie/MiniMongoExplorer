@@ -1,3 +1,6 @@
+### v0.2.1
+- pageAction: fixed width
+
 ### v0.2.0
 - pageAction: object inspector
 
