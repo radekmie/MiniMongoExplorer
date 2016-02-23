@@ -1,5 +1,6 @@
-import sift  from 'sift';
-import React from 'react';
+import sift            from 'sift';
+import React           from 'react';
+import ObjectInspector from 'react-object-inspector';
 
 export default class MiniMongoExplorer extends React.Component {
     constructor ({ minimongo }) {
@@ -48,12 +49,7 @@ export default class MiniMongoExplorer extends React.Component {
                 </pre>
 
                 <pre>
-                    <code data-before = "documents = "
-                          dangerouslySetInnerHTML = {{
-                              __html: JSON.stringify(queryResult, null, 4)
-                                  .replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`)
-                          }}
-                    />
+                    <ObjectInspector initialExpandedPaths = {['root']} data = {queryResult} />
                 </pre>
             </main>
         );

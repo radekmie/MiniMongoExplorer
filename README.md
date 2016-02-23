@@ -9,6 +9,7 @@
 - collections listing
 - documents counts on collection listing
 - live querying
+- objects inspector
 - results count
 - snapshot of MiniMongo
 - visible only on sites using Meteor
