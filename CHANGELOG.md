@@ -1,3 +1,13 @@
+### v0.3.0
+- devtools: collections counts
+- devtools: collections listing
+- devtools: live querying
+- devtools: refreshing on request
+- devtools: snapshot of MiniMongo
+- devtools: tabs
+- devtools: text and object inspector mode
+- pageAction: removed
+
 ### v0.2.1
 - pageAction: fixed width
 

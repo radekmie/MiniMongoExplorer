@@ -2,14 +2,16 @@
 
 ### Handy Google Chrome extension for reviewing MiniMongo.
 
-![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-1.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-2.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-3.png)
 
 ### Features:
 
+- collections counts
 - collections listing
-- documents counts on collection listing
 - live querying
-- objects inspector
-- results count
+- refreshing on request
 - snapshot of MiniMongo
-- visible only on sites using Meteor
+- tabs
+- text and object inspector mode

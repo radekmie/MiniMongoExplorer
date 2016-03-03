@@ -3,72 +3,153 @@ import React           from 'react';
 import ObjectInspector from 'react-object-inspector';
 
 export default class MiniMongoExplorer extends React.Component {
-    constructor ({ minimongo }) {
-        super({ minimongo });
+    state = {
+        minimongo: {},
+        tab: undefined,
+        tabs: [],
+        text: false
+    };
 
-        this.state = {
-            collection: Object.keys(minimongo).sort()[0],
-
-            query:       '',
-            queryError:  false,
-            queryResult: []
-        };
-    }
-
-    componentDidMount () {
-        this.onQuery('');
+    componentWillMount () {
+        this.props.fetch(minimongo => this.setState({ minimongo }));
     }
 
     render () {
-        const { minimongo } = this.props;
-        const { collection, query, queryError, queryResult } = this.state;
-
         return (
             <main>
-                <select value = {collection} onChange = {event => this.onCollection(event.target.value)}>
-                    {Object.keys(minimongo).sort().map(collection =>
-                        <option key = {collection} value = {collection}>
-                            {collection} ({Object.keys(minimongo[collection]).length})
-                        </option>
-                    )}
-                </select>
+                <aside>
+                    <h3>collections</h3>
+                    <ul>
+                        {Object.keys(this.state.minimongo).sort().map(collection =>
+                            <li key = {collection} onClick = {() => this.onTabAdd(collection)}>
+                                <span dangerouslySetInnerHTML = {{ __html: collection }} />
+                                <span dangerouslySetInnerHTML = {{ __html: `<i>(${Object.keys(this.state.minimongo[collection]).length})</i>` }} />
+                            </li>
+                        )}
+                    </ul>
 
-                <pre style={{ color: queryError ? 'red' : 'initial' }}>
-                    <code contentEditable
-                          data-before = "query = {"
-                          data-after = "}"
-                          spellCheck = {false}
-                          onBlur  = {event => this.onQuery(event.target.innerText)}
-                          onInput = {event => this.onQuery(event.target.innerText)}
-                          dangerouslySetInnerHTML = {{ __html: query }}
-                    />
+                    <button onClick = {() => this.setState({ text: !this.state.text })}>
+                        {this.state.text
+                            ? 'toggle view mode'
+                            : 'toggle text mode'
+                        }
+                    </button>
+                    <button onClick = {() => this.props.fetch(minimongo => this.setState({ minimongo }))}>
+                        refresh
+                    </button>
+                </aside>
 
-                    <br />
+                <section>
+                    <nav>
+                        <a>
+                            <span onClick = {() => this.onTabCloseAll()}><b>x</b></span>
+                        </a>
 
-                    <code data-before = "count = " dangerouslySetInnerHTML = {{ __html: queryResult.length }} />
-                </pre>
+                        {this.state.tabs.map(({ collection }, tab) =>
+                            <a key = {tab} onClick = {() => this.onTabChange(tab)}>
+                                {tab === this.state.tab
+                                    ? <b>{collection}</b>
+                                    : <i>{collection}</i>
+                                }
 
-                <pre>
-                    <ObjectInspector initialExpandedPaths = {['root']} data = {queryResult} />
-                </pre>
+                                <span onClick = {event => (event.stopPropagation(), this.onTabClose(tab))}>
+                                    <b>x</b>
+                                </span>
+                            </a>
+                        )}
+                    </nav>
+
+                    {this.state.tabs[this.state.tab] &&
+                        <textarea rows = {1}
+                                  spellCheck = {false}
+                                  style = {{ color: this.state.tabs[this.state.tab].error ? '#f00' : 'initial' }}
+                                  value = {this.state.tabs[this.state.tab] && this.state.tabs[this.state.tab].query}
+                                  onChange = {event => this.state.tabs[this.state.tab] && this.onQuery(event.currentTarget.value)}
+                        />
+                    }
+
+                    {this.state.tabs[this.state.tab]
+                        ? this.state.text
+                            ? <pre dangerouslySetInnerHTML = {{ __html: JSON.stringify(this.state.tabs[this.state.tab].result, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`) }} />
+                            : <ObjectInspector key = {this.state.tab} initialExpandedPaths = {['root']} data = {this.state.tabs[this.state.tab].result} />
+                        : (
+                            <div>
+                                <article>
+                                    <h3>Quick overview:</h3>
+                                    <ul>
+                                        <li>select collection</li>
+                                        <li>select tab</li>
+                                        <li>compose query</li>
+                                        <li>toggle mode</li>
+                                        <li>refresh if necessary</li>
+                                    </ul>
+                                </article>
+                            </div>
+                        )
+                    }
+                </section>
             </main>
         );
     }
 
-    onCollection = collection => {
-        this.setState({ collection }, () => this.onQuery(this.state.query));
-    };
+    onAction = (action, key) =>
+        this.props[action](data => this.setState({ [key]: data }))
+    ;
 
-    onQuery = query => {
-        const minimongo  = this.props.minimongo;
-        const collection = this.state.collection;
+    onQuery = query =>
+        this.setState({
+            tabs: this.state.tabs.slice(0, this.state.tab)
+                .concat({
+                    ...this.state.tabs[this.state.tab],
+                    ...this.runQuery(query, this.state.tabs[this.state.tab].collection)
+                })
+                .concat(this.state.tabs.slice(this.state.tab + 1))
+        })
+    ;
 
-        const documents = Object.keys(minimongo[collection]).map(id => minimongo[collection][id]);
+    onTabAdd = collection =>
+        this.setState({
+            tab:  this.state.tabs.length,
+            tabs: this.state.tabs.concat({ collection, ...this.runQuery('{}', collection) })
+        })
+    ;
+
+    onTabChange = tab =>
+        this.setState({ tab })
+    ;
+
+    onTabClose = tab =>
+        this.setState({
+            tab: this.state.tab === tab
+                ? undefined
+                : this.state.tab < tab
+                    ? this.state.tab
+                    : this.state.tab - 1,
+            tabs: this.state.tabs.slice(0, tab).concat(this.state.tabs.slice(tab + 1))
+        })
+    ;
+
+    onTabCloseAll = () =>
+        this.setState({ tab: undefined, tabs: [], })
+    ;
+
+    runQuery = (query, collection) => {
+        let error = false;
+        let documentsArray = Object
+            .keys(this.state.minimongo[collection])
+            .sort()
+            .map(key => this.state.minimongo[collection][key]);
 
         try {
-            this.setState({ query, queryError: false, queryResult: sift(eval(`({${query}})`), documents) });
-        } catch (error) {
-            this.setState({ query, queryError: true, queryResult: documents });
+            documentsArray = sift(eval(`(${query})`), documentsArray);
+        } catch (_) {
+            error = true;
         }
-    }
+
+        return {
+            error,
+            query,
+            result: documentsArray.reduce((result, doc) => ({ ...result, [doc._id]: doc }), {})
+        };
+    };
 }
