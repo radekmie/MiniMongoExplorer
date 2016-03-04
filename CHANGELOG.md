@@ -1,3 +1,6 @@
+### v0.3.1
+- devtools: retrieving data fix
+
 ### v0.3.0
 - devtools: collections counts
 - devtools: collections listing

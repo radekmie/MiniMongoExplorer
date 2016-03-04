@@ -14,12 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         return '{}';
                     }
 
-                    let collections = Meteor.connection._mongo_livedata_collections;
+                    var collections = Meteor.connection._mongo_livedata_collections;
                     if (collections) {
                         collections = Object.keys(collections)
-                            .reduce((minimongo, collection) =>
-                                ((minimongo[collection] = collections[collection]._docs._map), minimongo)
-                            , {});
+                            .reduce(function (minimongo, collection) {
+                                minimongo[collection] = collections[collection]._docs._map;
+                                return minimongo;
+                            }, {});
                     } else {
                         collections = {};
                     }
