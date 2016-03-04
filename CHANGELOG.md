@@ -1,3 +1,7 @@
+### v0.3.2
+- devtools: refresh refreshes queries
+- devtools: results count in tab
+
 ### v0.3.1
 - devtools: retrieving data fix
 

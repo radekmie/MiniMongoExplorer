@@ -11,7 +11,7 @@ export default class MiniMongoExplorer extends React.Component {
     };
 
     componentWillMount () {
-        this.props.fetch(minimongo => this.setState({ minimongo }));
+        this.onRefresh();
     }
 
     render () {
@@ -34,7 +34,7 @@ export default class MiniMongoExplorer extends React.Component {
                             : 'toggle text mode'
                         }
                     </button>
-                    <button onClick = {() => this.props.fetch(minimongo => this.setState({ minimongo }))}>
+                    <button onClick = {() => this.onRefresh()}>
                         refresh
                     </button>
                 </aside>
@@ -45,12 +45,14 @@ export default class MiniMongoExplorer extends React.Component {
                             <span onClick = {() => this.onTabCloseAll()}><b>x</b></span>
                         </a>
 
-                        {this.state.tabs.map(({ collection }, tab) =>
+                        {this.state.tabs.map(({ collection, count }, tab) =>
                             <a key = {tab} onClick = {() => this.onTabChange(tab)}>
                                 {tab === this.state.tab
                                     ? <b>{collection}</b>
                                     : <i>{collection}</i>
                                 }
+
+                                <i dangerouslySetInnerHTML = {{ __html: `(${count})` }} />
 
                                 <span onClick = {event => (event.stopPropagation(), this.onTabClose(tab))}>
                                     <b>x</b>
@@ -64,7 +66,7 @@ export default class MiniMongoExplorer extends React.Component {
                                   spellCheck = {false}
                                   style = {{ color: this.state.tabs[this.state.tab].error ? '#f00' : 'initial' }}
                                   value = {this.state.tabs[this.state.tab] && this.state.tabs[this.state.tab].query}
-                                  onChange = {event => this.state.tabs[this.state.tab] && this.onQuery(event.currentTarget.value)}
+                                  onChange = {event => this.state.tabs[this.state.tab] && this.onQuery(this.state.tab, event.currentTarget.value)}
                         />
                     }
 
@@ -96,14 +98,30 @@ export default class MiniMongoExplorer extends React.Component {
         this.props[action](data => this.setState({ [key]: data }))
     ;
 
-    onQuery = query =>
-        this.setState({
-            tabs: this.state.tabs.slice(0, this.state.tab)
-                .concat({
-                    ...this.state.tabs[this.state.tab],
-                    ...this.runQuery(query, this.state.tabs[this.state.tab].collection)
+    onRefresh = () =>
+        this.props.fetch(minimongo =>
+            this.setState({ minimongo }, () =>
+                this.setState({
+                    tabs: this.state.tabs.map(({ collection, query, ...rest }) =>
+                        ({
+                            collection,
+                            ...rest,
+                            ...this.runQuery(query, collection)
+                        })
+                    )
                 })
-                .concat(this.state.tabs.slice(this.state.tab + 1))
+            )
+        )
+    ;
+
+    onQuery = (tab, query) =>
+        this.setState({
+            tabs: this.state.tabs.slice(0, tab)
+                .concat({
+                    ...this.state.tabs[tab],
+                    ...this.runQuery(query, this.state.tabs[tab].collection)
+                })
+                .concat(this.state.tabs.slice(tab + 1))
         })
     ;
 
@@ -149,6 +167,7 @@ export default class MiniMongoExplorer extends React.Component {
         return {
             error,
             query,
+            count:  documentsArray.length,
             result: documentsArray.reduce((result, doc) => ({ ...result, [doc._id]: doc }), {})
         };
     };
