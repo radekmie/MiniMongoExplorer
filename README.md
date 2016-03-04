@@ -15,3 +15,9 @@
 - snapshot of MiniMongo
 - tabs
 - text and object inspector mode
+
+### How to install:
+
+- download `.crx` file from `binary`
+- open `chrome://extensions`
+- drag and drop `.crx` file into tab

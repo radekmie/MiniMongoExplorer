@@ -1,3 +1,7 @@
+### v0.3.3
+- devtools: show help button
+- devtools: show/hide sidebar
+
 ### v0.3.2
 - devtools: refresh refreshes queries
 - devtools: results count in tab

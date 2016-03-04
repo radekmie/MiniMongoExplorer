@@ -4,10 +4,13 @@ import ObjectInspector from 'react-object-inspector';
 
 export default class MiniMongoExplorer extends React.Component {
     state = {
+        tabs:  [],
+        tabId: -1,
+
         minimongo: {},
-        tab: undefined,
-        tabs: [],
-        text: false
+
+        viewSide: true,
+        viewText: false
     };
 
     componentWillMount () {
@@ -15,39 +18,43 @@ export default class MiniMongoExplorer extends React.Component {
     }
 
     render () {
+        const { tabs, tabId, minimongo, viewSide, viewText } = this.state;
+
         return (
             <main>
-                <aside>
-                    <h3>collections</h3>
-                    <ul>
-                        {Object.keys(this.state.minimongo).sort().map(collection =>
-                            <li key = {collection} onClick = {() => this.onTabAdd(collection)}>
-                                <span dangerouslySetInnerHTML = {{ __html: collection }} />
-                                <span dangerouslySetInnerHTML = {{ __html: `<i>(${Object.keys(this.state.minimongo[collection]).length})</i>` }} />
-                            </li>
-                        )}
-                    </ul>
+                {viewSide &&
+                    <aside>
+                        <h3>collections</h3>
+                        <ul>
+                            {Object.keys(minimongo).sort().map(collection =>
+                                <li key = {collection} onClick = {() => this.onTabAdd(collection)}>
+                                    <span dangerouslySetInnerHTML = {{ __html: collection }} />
+                                    <span dangerouslySetInnerHTML = {{ __html: `<i>(${Object.keys(minimongo[collection]).length})</i>` }} />
+                                </li>
+                            )}
+                        </ul>
 
-                    <button onClick = {() => this.setState({ text: !this.state.text })}>
-                        {this.state.text
-                            ? 'toggle view mode'
-                            : 'toggle text mode'
-                        }
-                    </button>
-                    <button onClick = {() => this.onRefresh()}>
-                        refresh
-                    </button>
-                </aside>
+                        <button onClick = {this.onText}>
+                            {viewText
+                                ? 'toggle view mode'
+                                : 'toggle text mode'
+                            }
+                        </button>
+                        <button onClick = {this.onRefresh}>
+                            refresh
+                        </button>
+                    </aside>
+                }
 
                 <section>
                     <nav>
-                        <a>
-                            <span onClick = {() => this.onTabCloseAll()}><b>x</b></span>
-                        </a>
+                        <a><span onClick = {this.onSide}><b>{viewSide ? '<' : '>'}</b></span></a>
+                        <a><span onClick = {this.onHelp}><b>?</b></span></a>
+                        <a><span onClick = {this.onTabCloseAll}><b>x</b></span></a>
 
-                        {this.state.tabs.map(({ collection, count }, tab) =>
+                        {tabs.map(({ collection, count }, tab) =>
                             <a key = {tab} onClick = {() => this.onTabChange(tab)}>
-                                {tab === this.state.tab
+                                {tab === tabId
                                     ? <b>{collection}</b>
                                     : <i>{collection}</i>
                                 }
@@ -61,21 +68,21 @@ export default class MiniMongoExplorer extends React.Component {
                         )}
                     </nav>
 
-                    {this.state.tabs[this.state.tab] &&
+                    {tabs[tabId] &&
                         <textarea rows = {1}
                                   spellCheck = {false}
-                                  style = {{ color: this.state.tabs[this.state.tab].error ? '#f00' : 'initial' }}
-                                  value = {this.state.tabs[this.state.tab] && this.state.tabs[this.state.tab].query}
-                                  onChange = {event => this.state.tabs[this.state.tab] && this.onQuery(this.state.tab, event.currentTarget.value)}
+                                  style = {{ color: tabs[tabId].error ? '#f00' : 'initial' }}
+                                  value = {tabs[tabId].query}
+                                  onChange = {event => this.onQuery(tabId, event.currentTarget.value)}
                         />
                     }
 
-                    {this.state.tabs[this.state.tab]
-                        ? this.state.text
-                            ? <pre dangerouslySetInnerHTML = {{ __html: JSON.stringify(this.state.tabs[this.state.tab].result, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`) }} />
-                            : <ObjectInspector key = {this.state.tab} initialExpandedPaths = {['root']} data = {this.state.tabs[this.state.tab].result} />
+                    {tabs[tabId]
+                        ? viewText
+                            ? <pre dangerouslySetInnerHTML = {{ __html: JSON.stringify(tabs[tabId].result, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`) }} />
+                            : <ObjectInspector key = {tabId} initialExpandedPaths = {['root']} data = {tabs[tabId].result} />
                         : (
-                            <div>
+                            <section>
                                 <article>
                                     <h3>Quick overview:</h3>
                                     <ul>
@@ -86,7 +93,7 @@ export default class MiniMongoExplorer extends React.Component {
                                         <li>refresh if necessary</li>
                                     </ul>
                                 </article>
-                            </div>
+                            </section>
                         )
                     }
                 </section>
@@ -94,8 +101,19 @@ export default class MiniMongoExplorer extends React.Component {
         );
     }
 
-    onAction = (action, key) =>
-        this.props[action](data => this.setState({ [key]: data }))
+    onHelp = () =>
+        this.setState({ tabId: -1 })
+    ;
+
+    onQuery = (tabId, query) =>
+        this.setState({
+            tabs: this.state.tabs.slice(0, tabId)
+                .concat({
+                    ...this.state.tabs[tabId],
+                    ...this.runQuery(query, this.state.tabs[tabId].collection)
+                })
+                .concat(this.state.tabs.slice(tabId + 1))
+        })
     ;
 
     onRefresh = () =>
@@ -114,41 +132,38 @@ export default class MiniMongoExplorer extends React.Component {
         )
     ;
 
-    onQuery = (tab, query) =>
-        this.setState({
-            tabs: this.state.tabs.slice(0, tab)
-                .concat({
-                    ...this.state.tabs[tab],
-                    ...this.runQuery(query, this.state.tabs[tab].collection)
-                })
-                .concat(this.state.tabs.slice(tab + 1))
-        })
+    onSide = () =>
+        this.setState({ viewSide: !this.state.viewSide })
     ;
 
     onTabAdd = collection =>
         this.setState({
-            tab:  this.state.tabs.length,
-            tabs: this.state.tabs.concat({ collection, ...this.runQuery('{}', collection) })
+            tabs:  this.state.tabs.concat({ collection, ...this.runQuery('{}', collection) }),
+            tabId: this.state.tabs.length
         })
     ;
 
-    onTabChange = tab =>
-        this.setState({ tab })
+    onTabChange = tabId =>
+        this.setState({ tabId })
     ;
 
-    onTabClose = tab =>
+    onTabClose = tabId =>
         this.setState({
-            tab: this.state.tab === tab
-                ? undefined
-                : this.state.tab < tab
-                    ? this.state.tab
-                    : this.state.tab - 1,
-            tabs: this.state.tabs.slice(0, tab).concat(this.state.tabs.slice(tab + 1))
+            tabId: this.state.tabId === tabId
+                ? -1
+                : this.state.tabId < tabId
+                    ? this.state.tabId
+                    : this.state.tabId - 1,
+            tabs: this.state.tabs.slice(0, tabId).concat(this.state.tabs.slice(tabId + 1))
         })
     ;
 
     onTabCloseAll = () =>
-        this.setState({ tab: undefined, tabs: [], })
+        this.setState({ tabs: [], tabId: -1 })
+    ;
+
+    onText = () =>
+        this.setState({ viewText: !this.state.viewText })
     ;
 
     runQuery = (query, collection) => {
