@@ -1,3 +1,6 @@
+### v0.4.1
+- devtools: reactive mode hides `resfresh` button
+
 ### v0.4.0
 - devtools: reactive mode
 
