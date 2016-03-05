@@ -1,3 +1,6 @@
+### v0.3.4
+- devtools: improved spelling
+
 ### v0.3.3
 - devtools: show help button
 - devtools: show/hide sidebar

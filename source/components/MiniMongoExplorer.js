@@ -34,14 +34,14 @@ export default class MiniMongoExplorer extends React.Component {
                             )}
                         </ul>
 
-                        <button onClick = {this.onText}>
-                            {viewText
-                                ? 'toggle view mode'
-                                : 'toggle text mode'
-                            }
-                        </button>
                         <button onClick = {this.onRefresh}>
                             refresh
+                        </button>
+                        <button onClick = {this.onText}>
+                            {viewText
+                                ? 'toggle text mode off'
+                                : 'toggle text mode on'
+                            }
                         </button>
                     </aside>
                 }

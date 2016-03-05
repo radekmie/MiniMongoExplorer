@@ -1,6 +1,8 @@
 {
     "name": "MiniMongoExplorer",
-    "version": "0.3.3",
+    "version": "0.3.4",
+
+    "homepage_url": "https://github.com/radekmie/MiniMongoExplorer",
 
     "icons": {
         "16": "images/icon16.png",
