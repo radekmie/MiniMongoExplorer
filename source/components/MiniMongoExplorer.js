@@ -9,6 +9,7 @@ export default class MiniMongoExplorer extends React.Component {
 
         minimongo: {},
 
+        viewAuto: false,
         viewSide: true,
         viewText: false
     };
@@ -17,8 +18,14 @@ export default class MiniMongoExplorer extends React.Component {
         this.onRefresh();
     }
 
+    componentWillReceiveProps () {
+        if (this.state.viewAuto) {
+            this.onRefresh();
+        }
+    }
+
     render () {
-        const { tabs, tabId, minimongo, viewSide, viewText } = this.state;
+        const { tabs, tabId, minimongo, viewAuto, viewSide, viewText } = this.state;
 
         return (
             <main>
@@ -41,6 +48,12 @@ export default class MiniMongoExplorer extends React.Component {
                             {viewText
                                 ? 'toggle text mode off'
                                 : 'toggle text mode on'
+                            }
+                        </button>
+                        <button onClick = {this.onAuto}>
+                            {viewAuto
+                                ? 'toggle reactive mode off'
+                                : 'toggle reactive mode on'
                             }
                         </button>
                     </aside>
@@ -100,6 +113,14 @@ export default class MiniMongoExplorer extends React.Component {
             </main>
         );
     }
+
+    onAuto = () =>
+        this.setState({ viewAuto: !this.state.viewAuto }, () =>
+            this.state.viewAuto
+                ? this.props.autoOn()
+                : this.props.autoOff()
+        )
+    ;
 
     onHelp = () =>
         this.setState({ tabId: -1 })

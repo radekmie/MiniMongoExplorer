@@ -1,3 +1,6 @@
+### v0.4.0
+- devtools: reactive mode
+
 ### v0.3.4
 - devtools: improved spelling
 
