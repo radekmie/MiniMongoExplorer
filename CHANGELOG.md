@@ -1,3 +1,6 @@
+### v0.5.1
+- devtools: optimized reactive mode
+
 ### v0.5.0
 - devtools: new UI built with [Photon](http://photonkit.com/)
 

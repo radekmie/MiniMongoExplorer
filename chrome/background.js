@@ -20,9 +20,11 @@ chrome.runtime.onConnect.addListener(function (port) {
     port.onDisconnect.addListener(function (port) {
         port.onMessage.removeListener(listener);
 
-        connections = connections.filter(function (connection) {
-            return connection.port !== port;
-        });
+        connections
+            .filter(function (connection) { return connection.port === port; })
+            .map(function (connection) { chrome.tabs.sendMessage(connection.tabId, { __autorun__: false }); });
+
+        connections = connections.filter(function (connection) { return connection.port !== port; });
     });
 });
 

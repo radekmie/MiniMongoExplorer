@@ -1,18 +1,20 @@
 import inject from './inject';
 export default inject(`
     (function () {
-        if (typeof Meteor === 'undefined') {
+        if (typeof Meteor                             === 'undefined' ||
+            typeof Tracker                            === 'undefined' ||
+            typeof Tracker._computations              === 'undefined' ||
+            typeof Tracker._computations.__explorer__ !== 'undefined') {
             return;
         }
 
-        if (typeof Tracker === 'undefined') {
-            return;
-        }
+        Tracker._computations.__explorer__ = true;
 
         var computation;
         var autorun = function () {
             if (computation) {
                 computation.stop();
+                computation = null;
             }
 
             computation = Tracker.autorun(function () {
