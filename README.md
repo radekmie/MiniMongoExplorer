@@ -11,13 +11,12 @@
 - collections counts
 - collections listing
 - live querying
-- optional reactive mode
-- refreshing on request
 - multiple tabs
-- text and object inspector mode
+- object inspector mode
+- reactive mode
 
 ### How to install:
 
-- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.4.1.crx)
+- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.5.0.crx)
 - open `chrome://extensions`
 - drag and drop `.crx` file into tab

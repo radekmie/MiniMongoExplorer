@@ -1,3 +1,6 @@
+### v0.5.0
+- devtools: new UI built with [Photon](http://photonkit.com/)
+
 ### v0.4.1
 - devtools: reactive mode hides `resfresh` button
 

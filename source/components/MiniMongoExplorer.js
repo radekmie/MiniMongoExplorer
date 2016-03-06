@@ -2,200 +2,176 @@ import sift            from 'sift';
 import React           from 'react';
 import ObjectInspector from 'react-object-inspector';
 
+import translations from '../lib/translations';
+
 export default class MiniMongoExplorer extends React.Component {
-    state = {
-        tabs:  [],
-        tabId: -1,
-
-        minimongo: {},
-
-        viewAuto: false,
-        viewSide: true,
-        viewText: false
+    static propTypes = {
+        refresh:   React.PropTypes.func.isRequired,
+        reactive:  React.PropTypes.func.isRequired,
+        minimongo: React.PropTypes.object.isRequired
     };
 
-    componentWillMount () {
-        this.onRefresh();
-    }
 
-    componentWillReceiveProps () {
-        if (this.state.viewAuto) {
-            this.onRefresh();
-        }
-    }
 
-    render () {
-        const { tabs, tabId, minimongo, viewAuto, viewSide, viewText } = this.state;
+    state = {
+        tab:  -1,
+        tabs: [],
 
-        return (
-            <main>
-                {viewSide &&
-                    <aside>
-                        <h3>collections</h3>
-                        <ul>
-                            {Object.keys(minimongo).sort().map(collection =>
-                                <li key = {collection} onClick = {() => this.onTabAdd(collection)}>
-                                    <span dangerouslySetInnerHTML = {{ __html: collection }} />
-                                    <span dangerouslySetInnerHTML = {{ __html: `<i>(${Object.keys(minimongo[collection]).length})</i>` }} />
-                                </li>
-                            )}
-                        </ul>
+        isReactive: false,
+        isTextMode: false,
+        isHelpVisible: true,
+        isSidebarVisible: true
+    };
 
-                        {viewAuto ||
-                            <button onClick = {this.onRefresh}>
-                                refresh
-                            </button>
-                        }
 
-                        <button onClick = {this.onText}>
-                            {viewText
-                                ? 'toggle text mode off'
-                                : 'toggle text mode on'
-                            }
-                        </button>
-                        <button onClick = {this.onAuto}>
-                            {viewAuto
-                                ? 'toggle reactive mode off'
-                                : 'toggle reactive mode on'
-                            }
-                        </button>
-                    </aside>
-                }
 
-                <section>
-                    <nav>
-                        <a><span onClick = {this.onSide}><b>{viewSide ? '<' : '>'}</b></span></a>
-                        <a><span onClick = {this.onHelp}><b>?</b></span></a>
-                        <a><span onClick = {this.onTabCloseAll}><b>x</b></span></a>
+    componentDidReceiveProps = ({ minimongo }) =>
+        this.setState({
+            tabs: this.state.tabs.map(tab =>
+                ({ ...tab, ...this.getResult(tab.collection, tab.query, minimongo) })
+            )
+        });
+    ;
 
-                        {tabs.map(({ collection, count }, tab) =>
-                            <a key = {tab} onClick = {() => this.onTabChange(tab)}>
-                                {tab === tabId
-                                    ? <b>{collection}</b>
-                                    : <i>{collection}</i>
-                                }
 
-                                <i dangerouslySetInnerHTML = {{ __html: `(${count})` }} />
 
-                                <span onClick = {event => (event.stopPropagation(), this.onTabClose(tab))}>
-                                    <b>x</b>
-                                </span>
-                            </a>
-                        )}
-                    </nav>
+    render = () =>
+        <section className="window">
+            <section className="window-content">
+                <section className="pane-group">
+                    {this.renderSidebar()}
 
-                    {tabs[tabId] &&
-                        <textarea rows = {1}
-                                  spellCheck = {false}
-                                  style = {{ color: tabs[tabId].error ? '#f00' : 'initial' }}
-                                  value = {tabs[tabId].query}
-                                  onChange = {event => this.onQuery(tabId, event.currentTarget.value)}
-                        />
-                    }
-
-                    {tabs[tabId]
-                        ? viewText
-                            ? <pre dangerouslySetInnerHTML = {{ __html: JSON.stringify(tabs[tabId].result, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`) }} />
-                            : <ObjectInspector key = {tabId} initialExpandedPaths = {['root']} data = {tabs[tabId].result} />
-                        : (
-                            <section>
-                                <article>
-                                    <h3>Quick overview:</h3>
-                                    <ul>
-                                        <li>select collection</li>
-                                        <li>select tab</li>
-                                        <li>compose query</li>
-                                        <li>toggle mode</li>
-                                        <li>refresh if necessary</li>
-                                    </ul>
-                                </article>
-                            </section>
-                        )
+                    {this.state.isHelpVisible
+                        ? this.renderHelp()
+                        : this.renderView()
                     }
                 </section>
-            </main>
-        );
-    }
+            </section>
 
-    onAuto = () =>
-        this.setState({ viewAuto: !this.state.viewAuto }, () =>
-            this.state.viewAuto
-                ? this.props.autoOn()
-                : this.props.autoOff()
-        )
+            {this.renderToolbar()}
+        </section>
     ;
 
-    onHelp = () =>
-        this.setState({ tabId: -1 })
+    renderHelp = () =>
+        <section className="pane">
+            <section className="pane-group">
+                <section className="pane pane-center pane-flex">
+                    <section className="nav-group">
+                        <span className="nav-group-item"><i className="icon icon-left" /> {translations.sidebar.hide}</span>
+                        <span className="nav-group-item"><i className="icon icon-right" /> {translations.sidebar.show}</span>
+                        <span className="nav-group-item"><i className="icon icon-play" /> {translations.reactivity.enable}</span>
+                        <span className="nav-group-item"><i className="icon icon-stop" /> {translations.reactivity.disable}</span>
+                        <span className="nav-group-item"><i className="icon icon-lifebuoy" /> {translations.help.toggle}</span>
+                        <span className="nav-group-item"><i className="icon icon-quote" /> {translations.text.enable}</span>
+                        <span className="nav-group-item"><i className="icon icon-newspaper" /> {translations.text.disable}</span>
+                        <span className="nav-group-item"><i className="icon icon-arrows-ccw" /> {translations.ui.refresh}</span>
+                        <span className="nav-group-item"><i className="icon icon-cancel" /> {translations.ui.closeAll}</span>
+                    </section>
+                </section>
+            </section>
+        </section>
     ;
 
-    onQuery = (tabId, query) =>
-        this.setState({
-            tabs: this.state.tabs.slice(0, tabId)
-                .concat({
-                    ...this.state.tabs[tabId],
-                    ...this.runQuery(query, this.state.tabs[tabId].collection)
-                })
-                .concat(this.state.tabs.slice(tabId + 1))
-        })
+    renderQuery = () =>
+        <textarea className={`form-control${this.getTab().error ? ' form-error' : ''}`} spellCheck={false} rows="1" value={this.getTab().query} onChange={event => this.onQuery(event.currentTarget.value)} />
     ;
 
-    onRefresh = () =>
-        this.props.fetch(minimongo =>
-            this.setState({ minimongo }, () =>
-                this.setState({
-                    tabs: this.state.tabs.map(({ collection, query, ...rest }) =>
-                        ({
-                            collection,
-                            ...rest,
-                            ...this.runQuery(query, collection)
-                        })
-                    )
-                })
-            )
-        )
+    renderResult = () =>
+        <section className="pane-scroll">
+            {this.state.isTextMode
+                ? <pre dangerouslySetInnerHTML={{ __html: JSON.stringify(this.getTab().result, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`) }} />
+                : <ObjectInspector key={this.state.tab} initialExpandedPaths={['root']} data={this.getTab().result} />
+            }
+        </section>
     ;
 
-    onSide = () =>
-        this.setState({ viewSide: !this.state.viewSide })
+    renderSidebar = () =>
+        this.state.isSidebarVisible &&
+            <section className="pane-sm sidebar">
+                <section className="nav-group nav-group-sm">
+                    <h1 className="nav-group-title">
+                        {translations.ui.collections}
+                    </h1>
+
+                    {this.getCollections().map(collection =>
+                        <a key={collection.name} onClick={() => this.onTabOpen(collection.name)} className="nav-group-item">
+                            <span className="pull-left"  dangerouslySetInnerHTML={{ __html: collection.name }}/>
+                            <span className="pull-right" dangerouslySetInnerHTML={{ __html: collection.count }}/>
+                        </a>
+                    )}
+                </section>
+            </section>
     ;
 
-    onTabAdd = collection =>
-        this.setState({
-            tabs:  this.state.tabs.concat({ collection, ...this.runQuery('{}', collection) }),
-            tabId: this.state.tabs.length
-        })
+    renderToolbar = () =>
+        <section className="toolbar toolbar-footer">
+            <section className="toolbar-actions">
+                <section className="btn-group">
+                    <button className="btn btn-default btn-mini" onClick={() => this.onToggleSidebar(this.state.isSidebarVisible)} title={this.state.isSidebarVisible ? translations.sidebar.hide : translations.sidebar.show}>
+                        <i className={`icon icon-${this.state.isSidebarVisible ? 'left' : 'right'}`} />
+                    </button>
+
+                    <button className="btn btn-default btn-mini" onClick={() => this.onToggleReactivity(this.state.isReactive)} title={this.state.isReactive ? translations.reactivity.disable : translations.reactivity.enable}>
+                        <i className={`icon icon-${this.state.isReactive ? 'stop' : 'play'}`} />
+                    </button>
+
+                    <button className="btn btn-default btn-mini" onClick={() => this.onToggleTextMode(this.state.isTextMode)} title={this.state.isTextMode ? translations.text.disable : translations.text.enable}>
+                        <i className={`icon icon-${this.state.isTextMode ? 'newspaper' : 'quote'}`} />
+                    </button>
+
+                    <button className="btn btn-default btn-mini" onClick={() => this.props.refresh()} title={translations.ui.refresh}>
+                        <i className="icon icon-arrows-ccw" />
+                    </button>
+
+                    <button className="btn btn-default btn-mini" onClick={() => this.onTabClose()} title={translations.ui.closeAll}>
+                        <i className="icon icon-cancel" />
+                    </button>
+                </section>
+
+                <a className="btn btn-default btn-mini pull-right" target="_blank" href="https://github.com/radekmie/MiniMongoExplorer" title="MiniMongoExplorer on GitHub">
+                    <i className="icon icon-github" />
+                </a>
+
+                <button className={`btn btn-default btn-mini pull-right${this.state.isHelpVisible ? ' active' : ''}`} onClick={() => this.onToggleHelp(this.state.isHelpVisible)} title={translations.help.toggle}>
+                    <i className="icon icon-lifebuoy" />
+                </button>
+            </section>
+        </section>
     ;
 
-    onTabChange = tabId =>
-        this.setState({ tabId })
+    renderView = () =>
+        <section className="pane pane-flex">
+            {this.state.tabs.length > 0 &&
+                <section className="tab-group">
+                    {this.state.tabs.map(tab =>
+                        <section key={tab.id} className={`tab-item${tab.id === this.state.tab ? ' active' : ''}`} onClick={() => this.onTabSelect(tab.id)}>
+                            <i className="icon icon-cancel icon-close-tab" onClick={() => this.onTabClose(tab.id)} />
+                            {tab.collection}
+                            {tab.count}
+                        </section>
+                    )}
+                </section>
+            }
+
+            {this.getTab() && this.renderQuery()}
+            {this.getTab() && this.renderResult()}
+        </section>
     ;
 
-    onTabClose = tabId =>
-        this.setState({
-            tabId: this.state.tabId === tabId
-                ? -1
-                : this.state.tabId < tabId
-                    ? this.state.tabId
-                    : this.state.tabId - 1,
-            tabs: this.state.tabs.slice(0, tabId).concat(this.state.tabs.slice(tabId + 1))
-        })
+
+
+    getCollections = () =>
+        Object.keys(this.props.minimongo)
+            .sort()
+            .map(collection => ({ name: collection, count: Object.keys(this.props.minimongo[collection]).length }));
     ;
 
-    onTabCloseAll = () =>
-        this.setState({ tabs: [], tabId: -1 })
-    ;
-
-    onText = () =>
-        this.setState({ viewText: !this.state.viewText })
-    ;
-
-    runQuery = (query, collection) => {
+    getResult = (collection, query = '{}', minimongo = this.props.minimongo) => {
         let error = false;
         let documentsArray = Object
-            .keys(this.state.minimongo[collection])
+            .keys(minimongo[collection])
             .sort()
-            .map(key => this.state.minimongo[collection][key]);
+            .map(_id => minimongo[collection][_id]);
 
         try {
             documentsArray = sift(eval(`(${query})`), documentsArray);
@@ -206,8 +182,73 @@ export default class MiniMongoExplorer extends React.Component {
         return {
             error,
             query,
+            collection,
             count:  documentsArray.length,
             result: documentsArray.reduce((result, doc) => ({ ...result, [doc._id]: doc }), {})
         };
     };
+
+    getTab = () =>
+        this.state.tabs.filter(tab => tab.id === this.state.tab)[0]
+    ;
+
+
+
+    onQuery = query =>
+        this.setState({
+            tabs: this.state.tabs
+                .filter(tab => tab.id === this.state.tab)
+                .map(tab => ({ ...tab, ...this.getResult(tab.collection, query) }))
+        })
+    ;
+
+    onTabClose = id =>
+        this.setState({
+            tab:  id ? this.state.tab === id ? -1 : this.state.tab  : -1,
+            tabs: id ? this.state.tabs.filter(tab => tab.id !== id) : []
+        })
+    ;
+
+    onTabOpen = collection =>
+        this.setState({
+            tabs: this.state.tabs.concat({ id: Date.now(), ...this.getResult(collection) })
+        }, () =>
+            this.setState({
+                tab: this.state.tabs[this.state.tabs.length - 1].id,
+                isHelpVisible: false
+            })
+        )
+    ;
+
+    onTabSelect = id =>
+        this.setState({
+            tab: id
+        })
+    ;
+
+    onToggleHelp = previous =>
+        this.setState({
+            isHelpVisible: !previous
+        })
+    ;
+
+    onToggleReactivity = previous =>
+        this.setState({
+            isReactive: !previous
+        }, () =>
+            this.props.reactive(!previous)
+        )
+    ;
+
+    onToggleSidebar = previous =>
+        this.setState({
+            isSidebarVisible: !previous
+        })
+    ;
+
+    onToggleTextMode = previous =>
+        this.setState({
+            isTextMode: !previous
+        })
+    ;
 }

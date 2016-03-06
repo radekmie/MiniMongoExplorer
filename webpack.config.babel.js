@@ -10,8 +10,9 @@ export default {
 
     module: {
         loaders: [
-            { exclude: /node_modules/, test: /\.js$/,  loader: ['babel'] },
-            { exclude: /node_modules/, test: /\.css$/, loader: ['style', 'css'] }
+            { exclude: /node_modules/, loader: ['url'],          test: /\.woff$/ },
+            { exclude: /node_modules/, loader: ['babel'],        test: /\.js$/ },
+            { exclude: /node_modules/, loader: ['style', 'css'], test: /\.css$/ }
         ]
     },
 

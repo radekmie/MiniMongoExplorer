@@ -1,125 +1,84 @@
-* {
-    margin:  0;
-    padding: 0;
+@import 'vendor/photon.css';
+
+
+
+pre {
+    margin: 0;
 }
 
-*, *:after, *:before {
-    box-sizing: border-box;
+
+
+.btn.active {
+    color: #fff;
+    border: 1px solid transparent;
+    background-color: #6d6c6d;
+    background-image: none;
 }
 
-article {
-    margin: auto;
-}
-
-aside {
-    display: flex;
-
-    flex-shrink: 0;
-
-    overflow-y: auto;
-
-    height: 100%;
-
-    background: #ddd;
-
-    flex-direction: column;
-}
-
-aside button {
-    flex-shrink: 0;
-
-    width: 100%;
-
-    padding: 0.25rem 0.5rem;
-}
-
-aside ul {
-    height: 100%;
-
-    list-style: none;
-}
-
-aside ul li {
-    cursor: pointer;
-
-    padding-left: 1rem;
-}
-
-aside ul li:hover {
-    background: #ccc;
-}
-
-aside ul li span + span {
-    float: right;
-
-    padding-left: 0.25rem;
-}
-
-body, html, main {
-    width:  100%;
-    height: 100%;
-
-    font-size:   12px;
-    line-height: 12px;
-    font-family: monospace;
-}
-
-main {
-    display: flex;
-}
-
-main section {
-    flex: 1;
-
-    display: flex;
-
-    flex-direction: column;
-}
-
-main > section {
-    width: 0;
-}
-
-nav {
-    display: flex;
-
-    flex-shrink: 0;
-
-    flex-wrap: wrap;
-
-    width: 100%;
-
-    background: #ccc;
-}
-
-nav a {
-    display: block;
-
-    padding: 0 0.25rem 0.2rem 0.25rem;
-
-    cursor: pointer;
-
-    background: #bbb;
-}
-
-nav a:nth-child(-n+3) {
-    background: #aaa;
-}
-
-nav a span {
+.btn.active .icon {
     color: #fff;
 }
 
-nav a span:hover {
-    color: #f00;
+.form-control {
+    width: 100% !important;
+
+    flex-shrink: 0;
+
+    resize: vertical;
+
+    border-top:   none;
+    border-left:  none;
+    border-right: none;
+
+    font-family: monospace;
+
+    box-shadow: none !important;
+    border-radius: 0 !important;
 }
 
-nav a * + span {
-    margin-left: 0.25rem;
+.form-error {
+    background: rgba(252, 96, 91, 0.25);
 }
 
-section > div,
-section > pre {
+.form-error:focus {
+    border-color: rgb(252, 96, 91);
+}
+
+.nav-group {
+    padding: 5px 0;
+}
+
+.nav-group-item {
+    padding: 0 5px 0 15px;
+
+    white-space:   initial;
+    text-overflow: initial;
+}
+
+.nav-group-item > :first-of-type {
+    margin-right: 10px;
+}
+
+.nav-group-sm {
+    line-height: 1.3;
+}
+
+.nav-group-title {
+    padding: 0 5px 2px;
+}
+
+.pane-center {
+    align-items:     center;
+    justify-content: center;
+}
+
+.pane-flex {
+    display: flex;
+
+    flex-direction: column;
+}
+
+.pane-scroll {
     flex: 1;
 
     overflow: auto;
@@ -127,16 +86,43 @@ section > pre {
     white-space: pre;
 }
 
-textarea {
-    border: 0;
+.pane-sm {
+    max-width: initial;
 
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.tab-item > .icon-close-tab {
+    left: initial;
+    right: 5px;
+}
+
+.tab-item > span:last-of-type {
+    margin-left: 5px;
+}
+
+.tab-item > span:last-of-type:before {
+    content: "(";
+}
+
+.tab-item > span:last-of-type:after {
+    content: ")";
+}
+
+.tab-group {
     flex-shrink: 0;
+}
 
-    padding-bottom: 0.15rem;
+.toolbar-actions {
+    margin:  3px 0 4px;
+    padding: 0 4px;
+}
 
-    background: #eee;
+.toolbar-actions > .btn {
+    margin-right: 0;
+}
 
-    width: 100%;
-
-    resize: vertical;
+.toolbar-actions > .btn-group {
+    margin-left: 0;
 }
