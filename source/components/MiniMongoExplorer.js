@@ -144,7 +144,7 @@ export default class MiniMongoExplorer extends React.Component {
             {this.state.tabs.length > 0 &&
                 <section className="tab-group">
                     {this.state.tabs.map(tab =>
-                        <section key={tab.id} className={`tab-item${tab.id === this.state.tab ? ' active' : ''}`} onClick={() => this.onTabSelect(tab.id)}>
+                        <section key={tab.id} className={`tab-item${tab.id === this.state.tab ? ' active' : ''}`} onClick={event => event.button == 1 ? this.onTabClose(tab.id) : this.onTabSelect(tab.id)}>
                             <i className="icon icon-cancel icon-close-tab" onClick={() => this.onTabClose(tab.id)} />
                             {tab.collection}
                             {tab.count}

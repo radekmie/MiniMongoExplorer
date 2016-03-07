@@ -1,3 +1,6 @@
+### v0.5.3
+- devtools: middle click closes tab
+
 ### v0.5.2
 - devtools: query background transition
 - devtools: refresh refreshes queries
