@@ -1,3 +1,9 @@
+### v0.5.2
+- devtools: query background transition
+- devtools: refresh refreshes queries
+- devtools: tabs are stackable
+- devtools: text view is selectable
+
 ### v0.5.1
 - devtools: optimized reactive mode
 

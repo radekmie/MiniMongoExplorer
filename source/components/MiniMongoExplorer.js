@@ -25,7 +25,7 @@ export default class MiniMongoExplorer extends React.Component {
 
 
 
-    componentDidReceiveProps = ({ minimongo }) =>
+    componentWillReceiveProps = ({ minimongo }) =>
         this.setState({
             tabs: this.state.tabs.map(tab =>
                 ({ ...tab, ...this.getResult(tab.collection, tab.query, minimongo) })

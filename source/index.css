@@ -34,6 +34,9 @@ pre {
 
     box-shadow: none !important;
     border-radius: 0 !important;
+
+    transition: background   250ms linear,
+                border-color 250ms linear;
 }
 
 .form-error {
@@ -79,11 +82,23 @@ pre {
 }
 
 .pane-scroll {
+    display: flex;
+
     flex: 1;
 
     overflow: auto;
 
     white-space: pre;
+}
+
+.pane-scroll * {
+    -webkit-user-select: initial;
+}
+
+.pane-scroll pre {
+    flex: 1;
+
+    cursor: auto;
 }
 
 .pane-sm {
@@ -112,6 +127,7 @@ pre {
 
 .tab-group {
     flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
 .toolbar-actions {
