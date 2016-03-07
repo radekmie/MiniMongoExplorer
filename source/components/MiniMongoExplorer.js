@@ -166,6 +166,12 @@ export default class MiniMongoExplorer extends React.Component {
             .map(collection => ({ name: collection, count: Object.keys(this.props.minimongo[collection]).length }));
     ;
 
+    getId = doc =>
+        typeof doc._id === 'string'
+            ? doc._id
+            : doc._id._str
+    ;
+
     getResult = (collection, query = '{}', minimongo = this.props.minimongo) => {
         let error = false;
         let documentsArray = Object
@@ -184,7 +190,7 @@ export default class MiniMongoExplorer extends React.Component {
             query,
             collection,
             count:  documentsArray.length,
-            result: documentsArray.reduce((result, doc) => ({ ...result, [doc._id]: doc }), {})
+            result: documentsArray.reduce((result, doc) => ({ ...result, [this.getId(doc)]: doc }), {})
         };
     };
 

@@ -1,3 +1,6 @@
+### v0.5.4
+- devtools: support for [ObjectId](https://docs.mongodb.org/manual/reference/object-id/)
+
 ### v0.5.3
 - devtools: middle click closes tab
 
