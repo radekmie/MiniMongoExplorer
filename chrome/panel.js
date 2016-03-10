@@ -1,10 +1,10 @@
 import { createElement } from 'react';
 import { render }        from 'react-dom';
 
-import injectAutorun from './lib/injectAutorun';
-import injectFetcher from './lib/injectFetcher';
+import injectAutorun from '../extension/lib/injectAutorun';
+import injectFetcher from '../extension/lib/injectFetcher';
 
-import MiniMongoExplorer from './components/MiniMongoExplorer';
+import MiniMongoExplorer from '../extension/components/MiniMongoExplorer';
 
 document.addEventListener('DOMContentLoaded', () => {
     let port = chrome.runtime.connect({ name: '__devtools__' });

@@ -18,6 +18,15 @@
 
 ### How to install:
 
-- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.6.0.crx)
+- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.7.0.crx)
 - open `chrome://extensions`
 - drag and drop `.crx` file into tab
+
+
+### Development:
+
+- clone this repo
+- `npm install`
+- `npm run build:chrome` to rebuild
+- `npm run watch:chrome` to rebuild on file change
+- build extension is in `build` directory

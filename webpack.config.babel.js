@@ -1,12 +1,11 @@
-import webpack from 'webpack';
+import webpack    from 'webpack';
+import { join }   from 'path';
+import HTMLPlugin from 'html-webpack-plugin';
 
-export default {
-    entry: [
-        './source/index.js',
-        './source/index.css'
-    ],
+export default ({ directory, entry, pages = [] }) => ({
+    entry,
 
-    output: { path: `${__dirname}/chrome`, filename: 'index.js' },
+    output: { path: join(__dirname, 'build', directory), filename: '[name].js' },
 
     module: {
         loaders: [
@@ -20,6 +19,18 @@ export default {
         new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' }),
         new webpack.LoaderOptionsPlugin({ minimize: true }),
         new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }, sourceMap: false }),
-        new webpack.optimize.OccurrenceOrderPlugin()
+        new webpack.optimize.OccurrenceOrderPlugin(),
+
+        ...pages.map(chunk => new HTMLPlugin({
+            title: null,
+
+            chunks:     [chunk],
+            filename: `${chunk}.html`,
+
+            minify: {
+                collapseWhitespace:  true,
+                removeEmptyElements: true
+            }
+        }))
     ]
-};
+});

@@ -1,44 +1,40 @@
-'use strict';
+import 'file?name=manifest.json!./manifest.json';
+import 'file?name=images/icon16.png!../images/icon16.png';
+import 'file?name=images/icon32.png!../images/icon32.png';
+import 'file?name=images/icon64.png!../images/icon64.png';
 
-var connections = [];
+let connections = [];
 
-chrome.runtime.onConnect.addListener(function (port) {
-    var listener = function (message) {
-        if (message.name === '__devtools__') {
-            connections.push({
-                port: port,
-                tabId: message.tabId
-            });
-        }
+chrome.runtime.onConnect.addListener(port => {
+    let onMessage = message =>
+        message.name === '__devtools__'
+            ? connections.push({ port, tabId: message.tabId })
+            : message.__autorun__ !== undefined
+                ? chrome.tabs.sendMessage(message.tabId, message)
+                : undefined
+    ;
 
-        if (message.__autorun__ !== undefined) {
-            chrome.tabs.sendMessage(message.tabId, message);
-        }
-    };
+    port.onMessage.addListener(onMessage);
+    port.onDisconnect.addListener(port => {
+        port.onMessage.removeListener(onMessage);
 
-    port.onMessage.addListener(listener);
-    port.onDisconnect.addListener(function (port) {
-        port.onMessage.removeListener(listener);
-
-        connections
-            .filter(function (connection) { return connection.port === port; })
-            .map(function (connection) { chrome.tabs.sendMessage(connection.tabId, { __autorun__: false }); });
-
-        connections = connections.filter(function (connection) { return connection.port !== port; });
+        connections = connections.filter(connection =>
+            connection.port === port
+                ? (chrome.tabs.sendMessage(connection.tabId, { __autorun__: false }), false)
+                : true
+        );
     });
 });
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (sender.tab) {
-        if (connections.some(function (connection) { return connection.tabId === sender.tab.id; })) {
-            connections
-                .filter (function (connection) { return connection.tabId === sender.tab.id; })
-                .forEach(function (connection) { connection.port.postMessage(message); });
-            sendResponse(false);
-        } else {
-            sendResponse(true);
-        }
-    }
-
-    return true;
-});
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
+    sender.tab && sender.tab.id
+        ? connections.some(connection => connection.tabId === sender.tab.id)
+            ? (
+                sendResponse(false),
+                connections
+                    .filter (connection => connection.tabId === sender.tab.id)
+                    .forEach(connection => connection.port.postMessage(message))
+            )
+            : sendResponse(true)
+        : undefined
+);

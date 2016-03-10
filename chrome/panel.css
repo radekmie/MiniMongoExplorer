@@ -1,12 +1,8 @@
-@import 'vendor/photon.css';
-
-
+@import '../extension/vendor/photon.css';
 
 pre {
     margin: 0;
 }
-
-
 
 .btn.active {
     color: #fff;
@@ -17,14 +13,6 @@ pre {
 
 .btn.active .icon {
     color: #fff;
-}
-
-.form-group {
-    width: 100% !important;
-
-    display: flex;
-
-    flex-shrink: 0;
 }
 
 .form-control {
@@ -51,6 +39,16 @@ pre {
 
 .form-error:focus {
     border-color: rgb(252, 96, 91);
+}
+
+.form-group {
+    width: 100% !important;
+
+    margin: 0;
+
+    display: flex;
+
+    flex-shrink: 0;
 }
 
 .nav-group {
@@ -107,6 +105,10 @@ pre {
     cursor: auto;
 }
 
+.pane-scroll > * {
+    padding: 5px;
+}
+
 .pane-sm {
     max-width: initial;
 
@@ -115,7 +117,7 @@ pre {
 }
 
 .tab-item {
-    padding: 1px 15px 0;
+    padding: 3px 15px 2px;
 }
 
 .tab-item > .icon-close-tab {

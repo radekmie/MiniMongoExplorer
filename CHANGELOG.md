@@ -1,3 +1,8 @@
+### v0.7.0
+- devtools: reduced extension size
+- devtools: improved performance
+- devtools: UI tweaks
+
 ### v0.6.0
 - devtools: sorting
 - devtools: UI tweaks
