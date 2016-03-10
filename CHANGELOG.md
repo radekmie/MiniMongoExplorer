@@ -1,3 +1,7 @@
+### v0.6.0
+- devtools: sorting
+- devtools: UI tweaks
+
 ### v0.5.4
 - devtools: support for [ObjectId](https://docs.mongodb.org/manual/reference/object-id/)
 

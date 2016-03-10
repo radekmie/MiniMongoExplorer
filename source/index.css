@@ -19,10 +19,16 @@ pre {
     color: #fff;
 }
 
-.form-control {
+.form-group {
     width: 100% !important;
 
+    display: flex;
+
     flex-shrink: 0;
+}
+
+.form-control {
+    flex: 1;
 
     resize: vertical;
 
@@ -108,13 +114,17 @@ pre {
     overflow-x: hidden;
 }
 
+.tab-item {
+    padding: 1px 15px 0;
+}
+
 .tab-item > .icon-close-tab {
     left: initial;
-    right: 5px;
+    right: 2.5px;
 }
 
 .tab-item > span:last-of-type {
-    margin-left: 5px;
+    margin-left: 2.5px;
 }
 
 .tab-item > span:last-of-type:before {

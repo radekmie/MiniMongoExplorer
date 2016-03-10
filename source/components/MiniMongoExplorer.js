@@ -1,6 +1,7 @@
-import sift            from 'sift';
 import React           from 'react';
 import ObjectInspector from 'react-object-inspector';
+import DocumentSorter  from 'marsdb/dist/DocumentSorter';
+import DocumentMatcher from 'marsdb/dist/DocumentMatcher';
 
 import translations from '../lib/translations';
 
@@ -28,7 +29,7 @@ export default class MiniMongoExplorer extends React.Component {
     componentWillReceiveProps = ({ minimongo }) =>
         this.setState({
             tabs: this.state.tabs.map(tab =>
-                ({ ...tab, ...this.getResult(tab.collection, tab.query, minimongo) })
+                ({ ...tab, ...this.getResult(tab.collection, tab.query, tab.sort, minimongo) })
             )
         });
     ;
@@ -73,13 +74,16 @@ export default class MiniMongoExplorer extends React.Component {
     ;
 
     renderQuery = () =>
-        <textarea className={`form-control${this.getTab().error ? ' form-error' : ''}`} spellCheck={false} rows="1" value={this.getTab().query} onChange={event => this.onQuery(event.currentTarget.value)} />
+        <section className="form-group">
+            <textarea className={`form-control${this.getTab().errorQuery ? ' form-error' : ''}`} spellCheck={false} rows="1" value={this.getTab().query} onChange={event => this.onQuery(event.currentTarget.value)} />
+            <textarea className={`form-control${this.getTab().errorSort ? ' form-error' : ''}`}  spellCheck={false} rows="1" value={this.getTab().sort}  onChange={event => this.onSort (event.currentTarget.value)} />
+        </section>
     ;
 
     renderResult = () =>
         <section className="pane-scroll">
             {this.state.isTextMode
-                ? <pre dangerouslySetInnerHTML={{ __html: JSON.stringify(this.getTab().result, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`) }} />
+                ? <pre>{JSON.stringify(this.getTab().result, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`)}</pre>
                 : <ObjectInspector key={this.state.tab} initialExpandedPaths={['root']} data={this.getTab().result} />
             }
         </section>
@@ -95,8 +99,8 @@ export default class MiniMongoExplorer extends React.Component {
 
                     {this.getCollections().map(collection =>
                         <a key={collection.name} onClick={() => this.onTabOpen(collection.name)} className="nav-group-item">
-                            <span className="pull-left"  dangerouslySetInnerHTML={{ __html: collection.name }}/>
-                            <span className="pull-right" dangerouslySetInnerHTML={{ __html: collection.count }}/>
+                            <span className="pull-left">{collection.name}</span>
+                            <span className="pull-right">{collection.count}</span>
                         </a>
                     )}
                 </section>
@@ -147,7 +151,7 @@ export default class MiniMongoExplorer extends React.Component {
                         <section key={tab.id} className={`tab-item${tab.id === this.state.tab ? ' active' : ''}`} onClick={event => event.button == 1 ? this.onTabClose(tab.id) : this.onTabSelect(tab.id)}>
                             <i className="icon icon-cancel icon-close-tab" onClick={() => this.onTabClose(tab.id)} />
                             {tab.collection}
-                            {tab.count}
+                            <span>{tab.count}</span>
                         </section>
                     )}
                 </section>
@@ -172,22 +176,26 @@ export default class MiniMongoExplorer extends React.Component {
             : doc._id._str
     ;
 
-    getResult = (collection, query = '{}', minimongo = this.props.minimongo) => {
-        let error = false;
-        let documentsArray = Object
-            .keys(minimongo[collection])
-            .sort()
-            .map(_id => minimongo[collection][_id]);
+    getResult = (collection, query = '{}', sort = '{}', minimongo = this.props.minimongo) => {
+        let sorter;
+        let matcher;
 
-        try {
-            documentsArray = sift(eval(`(${query})`), documentsArray);
-        } catch (_) {
-            error = true;
-        }
+        let errorSort  = false;
+        let errorQuery = false;
+
+        try { sorter  = new DocumentSorter (eval(`(${sort})`));  } catch (_) { errorSort  = true; }
+        try { matcher = new DocumentMatcher(eval(`(${query})`)); } catch (_) { errorQuery = true; }
+
+        let documentsArray = Object.keys(minimongo[collection]).map(_id => minimongo[collection][_id]);
+
+        if (matcher) { documentsArray = documentsArray.filter(doc => matcher.documentMatches(doc).result); }
+        if (sorter)  { documentsArray = documentsArray.sort(sorter.getComparator()); }
 
         return {
-            error,
+            sort,
             query,
+            errorSort,
+            errorQuery,
             collection,
             count:  documentsArray.length,
             result: documentsArray.reduce((result, doc) => ({ ...result, [this.getId(doc)]: doc }), {})
@@ -202,9 +210,21 @@ export default class MiniMongoExplorer extends React.Component {
 
     onQuery = query =>
         this.setState({
-            tabs: this.state.tabs
-                .filter(tab => tab.id === this.state.tab)
-                .map(tab => ({ ...tab, ...this.getResult(tab.collection, query) }))
+            tabs: this.state.tabs.map(tab =>
+                tab.id === this.state.tab
+                    ? ({ ...tab, ...this.getResult(tab.collection, query, tab.sort) })
+                    : tab
+            )
+        })
+    ;
+
+    onSort = sort =>
+        this.setState({
+            tabs: this.state.tabs.map(tab =>
+                tab.id === this.state.tab
+                    ? ({ ...tab, ...this.getResult(tab.collection, tab.query, sort) })
+                    : tab
+            )
         })
     ;
 
