@@ -1,3 +1,6 @@
+### v0.7.2
+- devtools: visible only on sites using Meteor
+
 ### v0.7.1
 - devtools: improved performance with many tabs opened
 - devtools: UI tweaks
