@@ -5,7 +5,10 @@ export default () => ({
     isReactive: false,
     isTextMode: false,
     isHelpVisible: true,
+    isTableVisible: false,
     isSidebarVisible: true,
+
+    subscriptions: {},
 
     snapshot: {},
     snapshotRequested: false,

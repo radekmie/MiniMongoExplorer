@@ -4,6 +4,10 @@ pre {
     margin: 0;
 }
 
+td {
+    vertical-align: top;
+}
+
 .btn.active {
     color: #fff;
     border: 1px solid transparent;
@@ -142,6 +146,15 @@ pre {
 .tab-group {
     flex-shrink: 0;
     flex-wrap: wrap;
+}
+
+.table-striped tr:active {
+  color: #333 !important;
+  background-color: #fff !important;
+}
+
+.table-striped tr:nth-child(even) {
+  background-color: #f5f5f4 !important;
 }
 
 .toolbar-actions {

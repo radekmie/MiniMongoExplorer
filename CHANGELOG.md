@@ -1,3 +1,7 @@
+### v0.8.0
+- devtools: subscriptions listing
+- devtools: case insensitive collections sorting
+
 ### v0.7.2
 - devtools: visible only on sites using Meteor
 

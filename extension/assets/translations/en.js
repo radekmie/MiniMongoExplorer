@@ -13,6 +13,13 @@ export default {
         show: 'Show sidebar'
     },
 
+    table: {
+        name:   'Subscription',
+        params: 'Params',
+        ready:  'Is ready',
+        toggle: 'Toggle subscriptions table'
+    },
+
     text: {
         disable: 'Disable text mode',
         enable:  'Enable text mode'
@@ -21,8 +28,10 @@ export default {
     ui: {
         close:       'Close all tabs',
         collections: 'Collections',
+        no:          '✗',
         query:       'Query',
         refresh:     'Refresh snapshot',
-        sort:        'Sort'
+        sort:        'Sort',
+        yes:         '✔'
     }
 };

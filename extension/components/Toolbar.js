@@ -3,7 +3,7 @@ import { PropTypes } from 'react';
 
 import translations from '../assets/translations/en';
 
-const Toolbar = ({ isHelpVisible, isReactive, isSidebarVisible, isTextMode, onRefresh, onTabClose, onToggleHelp, onToggleReactivity, onToggleSidebar, onToggleTextMode }) =>
+const Toolbar = ({ isHelpVisible, isReactive, isSidebarVisible, isTableVisible, isTextMode, onRefresh, onTabClose, onToggleHelp, onToggleReactivity, onToggleSidebar, onToggleTable, onToggleTextMode }) =>
     <section className="toolbar toolbar-footer">
         <section className="toolbar-actions">
             <section className="btn-group">
@@ -35,6 +35,10 @@ const Toolbar = ({ isHelpVisible, isReactive, isSidebarVisible, isTextMode, onRe
             <button className={`btn btn-default btn-mini pull-right${isHelpVisible ? ' active' : ''}`} onClick={() => onToggleHelp(isHelpVisible)} title={translations.help.toggle}>
                 <i className="icon icon-lifebuoy" />
             </button>
+
+            <button className={`btn btn-default btn-mini pull-right${isTableVisible ? ' active' : ''}`} onClick={() => onToggleTable(isTableVisible)} title={translations.table.toggle}>
+                <i className="icon icon-cloud-thunder" />
+            </button>
         </section>
     </section>
 ;
@@ -43,12 +47,14 @@ Toolbar.propTypes = {
     isHelpVisible:      PropTypes.bool.isRequired,
     isReactive:         PropTypes.bool.isRequired,
     isSidebarVisible:   PropTypes.bool.isRequired,
+    isTableVisible:     PropTypes.bool.isRequired,
     isTextMode:         PropTypes.bool.isRequired,
     onRefresh:          PropTypes.func.isRequired,
     onTabClose:         PropTypes.func.isRequired,
     onToggleHelp:       PropTypes.func.isRequired,
     onToggleReactivity: PropTypes.func.isRequired,
     onToggleSidebar:    PropTypes.func.isRequired,
+    onToggleTable:      PropTypes.func.isRequired,
     onToggleTextMode:   PropTypes.func.isRequired
 };
 

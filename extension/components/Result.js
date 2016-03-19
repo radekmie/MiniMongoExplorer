@@ -13,7 +13,7 @@ const Result = ({ data, isTextMode }) =>
 
 Result.propTypes = {
     data: PropTypes.object.isRequired,
-    isTextMode: PropTypes.bool.isRequired,
+    isTextMode: PropTypes.bool.isRequired
 };
 
 export default Result;

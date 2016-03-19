@@ -5,6 +5,7 @@
 ![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-1.png)
 ![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-2.png)
 ![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-3.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-4.png)
 
 ### Features:
 
@@ -13,12 +14,13 @@
 - live sorting
 - live querying
 - multiple tabs
+- subscriptions listing
 - object inspector mode
 - reactive mode
 
 ### How to install:
 
-- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.7.2.crx)
+- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.8.0.crx)
 - open `chrome://extensions`
 - drag and drop `.crx` file into tab
 

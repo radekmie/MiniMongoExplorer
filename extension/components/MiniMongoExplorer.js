@@ -8,6 +8,7 @@ import safeDocumentMatcher from '../lib/safeDocumentMatcher';
 import Help    from './Help';
 import View    from './View';
 import Query   from './Query';
+import Table   from './Table';
 import Result  from './Result';
 import Sidebar from './Sidebar';
 import Toolbar from './Toolbar';
@@ -34,7 +35,10 @@ export default class MiniMongoExplorer extends Component {
         isReactive:       PropTypes.bool.isRequired,
         isTextMode:       PropTypes.bool.isRequired,
         isHelpVisible:    PropTypes.bool.isRequired,
+        isTableVisible:   PropTypes.bool.isRequired,
         isSidebarVisible: PropTypes.bool.isRequired,
+
+        subscriptions: PropTypes.object.isRequired,
 
         snapshot:          PropTypes.object.isRequired,
         snapshotTimestamp: PropTypes.number.isRequired,
@@ -69,12 +73,14 @@ export default class MiniMongoExplorer extends Component {
 
                     {this.props.isHelpVisible
                         ? <Help />
-                        : (
-                            <View tab={this.props.tab} tabs={this.props.tabs} onTabClose={this.onTabClose} onTabSelect={this.onTabSelect}>
-                                {this.getTab() && <Query tab={this.getTab()} onQuery={this.onQuery} onSort={this.onSort} />}
-                                {this.getTab() && <Result data={this.getTab().result} isTextMode={this.props.isTextMode} />}
-                            </View>
-                        )
+                        : this.props.isTableVisible
+                            ? <Table data={this.props.subscriptions} />
+                            : (
+                                <View tab={this.props.tab} tabs={this.props.tabs} onTabClose={this.onTabClose} onTabSelect={this.onTabSelect}>
+                                    {this.getTab() && <Query tab={this.getTab()} onQuery={this.onQuery} onSort={this.onSort} />}
+                                    {this.getTab() && <Result data={this.getTab().result} isTextMode={this.props.isTextMode} />}
+                                </View>
+                            )
                     }
                 </section>
             </section>
@@ -82,12 +88,14 @@ export default class MiniMongoExplorer extends Component {
             <Toolbar isHelpVisible={this.props.isHelpVisible}
                      isReactive={this.props.isReactive}
                      isSidebarVisible={this.props.isSidebarVisible}
+                     isTableVisible={this.props.isTableVisible}
                      isTextMode={this.props.isTextMode}
                      onRefresh={this.onRefresh}
                      onTabClose={this.onTabClose}
                      onToggleHelp={this.onToggleHelp}
                      onToggleReactivity={this.onToggleReactivity}
                      onToggleSidebar={this.onToggleSidebar}
+                     onToggleTable={this.onToggleTable}
                      onToggleTextMode={this.onToggleTextMode}
             />
         </section>
@@ -97,7 +105,7 @@ export default class MiniMongoExplorer extends Component {
 
     getCollections = () =>
         Object.keys(this.props.snapshot)
-            .sort()
+            .sort((a, b) => a.localeCompare(b))
             .map(collection => ({ name: collection, count: Object.keys(this.props.snapshot[collection]).length }));
     ;
 
@@ -175,7 +183,8 @@ export default class MiniMongoExplorer extends Component {
         this.props.dispatch({
             tab:  id,
             tabs: this.props.tabs.concat({ id, ...this.getResult(collection) }),
-            isHelpVisible: false
+            isHelpVisible:  false,
+            isTableVisible: false
         })
     };
 
@@ -187,7 +196,8 @@ export default class MiniMongoExplorer extends Component {
 
     onToggleHelp = previous =>
         this.props.dispatch({
-            isHelpVisible: !previous
+            isHelpVisible: !previous,
+            isTableVisible: false
         })
     ;
 
@@ -200,6 +210,13 @@ export default class MiniMongoExplorer extends Component {
     onToggleSidebar = previous =>
         this.props.dispatch({
             isSidebarVisible: !previous
+        })
+    ;
+
+    onToggleTable = previous =>
+        this.props.dispatch({
+            isHelpVisible: false,
+            isTableVisible: !previous
         })
     ;
 
