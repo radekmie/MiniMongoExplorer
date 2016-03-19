@@ -1,7 +1,7 @@
 import React         from 'react';
 import { PropTypes } from 'react';
 
-import translations from '../translations/en';
+import translations from '../assets/translations/en';
 
 const Toolbar = ({ isHelpVisible, isReactive, isSidebarVisible, isTextMode, onRefresh, onTabClose, onToggleHelp, onToggleReactivity, onToggleSidebar, onToggleTextMode }) =>
     <section className="toolbar toolbar-footer">
@@ -23,7 +23,7 @@ const Toolbar = ({ isHelpVisible, isReactive, isSidebarVisible, isTextMode, onRe
                     <i className="icon icon-arrows-ccw" />
                 </button>
 
-                <button className="btn btn-default btn-mini" onClick={() => onTabClose()} title={translations.ui.close}>
+                <button className="btn btn-default btn-mini" onClick={() => onTabClose(-1)} title={translations.ui.close}>
                     <i className="icon icon-cancel" />
                 </button>
             </section>

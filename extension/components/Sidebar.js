@@ -1,7 +1,7 @@
 import React         from 'react';
 import { PropTypes } from 'react';
 
-import translations from '../translations/en';
+import translations from '../assets/translations/en';
 
 const Sidebar = ({ collections, onTabOpen }) =>
     <section className="pane-sm sidebar">

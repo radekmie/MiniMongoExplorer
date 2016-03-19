@@ -1,22 +1,34 @@
-import React         from 'react';
-import { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
-import shouldComponentUpdate from '../lib/shouldComponentUpdate';
+export default class Textarea extends Component {
+    static propTypes = {
+        error:    PropTypes.bool.isRequired,
+        title:    PropTypes.string.isRequired,
+        value:    PropTypes.string.isRequired,
+        onChange: PropTypes.func.isRequired
+    };
 
-const Textarea = ({ error, title, value, onChange }) =>
-    <textarea className={`form-control${error ? ' form-error' : ''}`}
-              rows="1"
-              title={title}
-              value={value}
-              spellCheck={false}
-              onChange={event => onChange(event.currentTarget.value)}
-    />
-;
+    state = { value: '' };
 
-Textarea.propTypes = {
-    error:    PropTypes.bool.isRequired,
-    value:    PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired
-};
+    componentDidMount = () =>
+        this.setState({ value: this.props.value })
+    ;
 
-export default shouldComponentUpdate((newProps, oldProps) => newProps.value !== oldProps.value)(Textarea);
+    componentWillReceiveProps = props =>
+        this.setState({ value: props.value })
+    ;
+
+    render = () =>
+        <textarea className={`form-control${this.props.error ? ' form-error' : ''}`}
+                  rows="1"
+                  spellCheck={false}
+                  title={this.props.title}
+                  value={this.state.value}
+                  onChange={event => this.onChange(event.currentTarget.value)}
+        />
+    ;
+
+    onChange = value =>
+        this.setState({ value }, () => this.props.onChange(value))
+    ;
+}

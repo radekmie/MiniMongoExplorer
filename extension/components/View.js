@@ -7,7 +7,7 @@ const View = ({ children, tab, tabs, onTabClose, onTabSelect }) =>
             <section className="tab-group">
                 {tabs.map(({ collection, count, id }) =>
                     <section key={id} className={`tab-item${id === tab ? ' active' : ''}`} onClick={event => event.button == 1 ? onTabClose(id) : onTabSelect(id)}>
-                        <i className="icon icon-cancel icon-close-tab" onClick={() => onTabClose(id)} />
+                        <i className="icon icon-cancel icon-close-tab" onClick={event => (event.stopPropagation(), onTabClose(id))} />
                         {collection}
                         <span>{count}</span>
                     </section>

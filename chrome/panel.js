@@ -1,33 +1,26 @@
 import { createElement } from 'react';
 import { render }        from 'react-dom';
 
-import injectAutorun from '../extension/lib/injectAutorun';
-import injectFetcher from '../extension/lib/injectFetcher';
+import inject            from '../extension/lib/inject';
+import create            from '../extension/lib/reduxState';
+import { DEL, NEW, SET } from '../extension/lib/reduxConstants';
 
 import MiniMongoExplorer from '../extension/components/MiniMongoExplorer';
 
 document.addEventListener('DOMContentLoaded', () => {
-    let port = chrome.runtime.connect({ name: '__devtools__' });
+    let port = chrome.runtime.connect();
     if (port) {
-        let fresh = false;
-        let mount = minimongo =>
-            render(
-                createElement(
-                    MiniMongoExplorer,
-                    {
-                        minimongo,
-                        refresh:  () => injectFetcher(mount),
-                        reactive: on => ((fresh = on), port.postMessage({ __autorun__: on,  tabId: chrome.devtools.inspectedWindow.tabId }))
-                    }
-                ),
-                document.body
-            )
-        ;
+        let dispatch = diff => port.postMessage({ type: SET, payload: { id: chrome.devtools.inspectedWindow.tabId, ...diff } });
+        let mount = state => render(createElement(MiniMongoExplorer, { dispatch, ...state }), document.body);
 
-        port.postMessage({ name: '__devtools__', tabId: chrome.devtools.inspectedWindow.tabId });
-        port.onMessage.addListener(() => fresh && injectFetcher(mount));
+        chrome.devtools.inspectedWindow.eval(inject, () => {
+            port.onMessage.addListener(mount);
+            port.postMessage({ type: NEW, payload: { id: chrome.devtools.inspectedWindow.tabId, ...create() } });
+        });
 
-        injectAutorun();
-        injectFetcher(mount);
+        window.addEventListener('beforeunload', () => {
+            port.postMessage({ type: DEL, payload: { id: chrome.devtools.inspectedWindow.tabId } });
+            port.disconnect();
+        });
     }
 });

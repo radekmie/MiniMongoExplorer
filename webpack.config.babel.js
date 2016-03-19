@@ -6,7 +6,6 @@ export default ({ directory, entry, pages = [] }) => ({
     entry,
 
     output: { path: join(__dirname, 'build', directory), filename: '[name].js' },
-
     module: {
         loaders: [
             { exclude: /node_modules/, loader: ['url'],          test: /\.woff$/ },

@@ -3,7 +3,7 @@ import { PropTypes } from 'react';
 
 import Textarea from './Textarea';
 
-import translations from '../translations/en';
+import translations from '../assets/translations/en';
 
 const Query = ({ tab, onQuery, onSort }) =>
     <section className="form-group">

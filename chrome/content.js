@@ -1,11 +1,7 @@
-chrome.runtime.onMessage.addListener(message =>
-    message.__autorun__ === undefined
-        ? undefined
-        : window.postMessage(message, '*')
-);
+chrome.runtime.onMessage.addListener(message => window.postMessage({ ...message, duplex: true }, '*'));
 
-window.addEventListener('message', event =>
-    event.source === window && event.data.__timestamp__
-        ? chrome.runtime.sendMessage(event.data, requestStop => requestStop && window.postMessage({ __autorun__: false }, '*'))
-        : undefined
-);
+window.addEventListener('message', event => {
+    if (event.source === window && event.data.duplex === undefined && event.data.payload && event.data.type) {
+        chrome.runtime.sendMessage(event.data);
+    }
+});

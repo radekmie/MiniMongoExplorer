@@ -14,32 +14,48 @@ import Toolbar from './Toolbar';
 
 export default class MiniMongoExplorer extends Component {
     static propTypes = {
-        refresh:   PropTypes.func.isRequired,
-        reactive:  PropTypes.func.isRequired,
-        minimongo: PropTypes.object.isRequired
+        tab:  PropTypes.number.isRequired,
+        tabs: PropTypes.arrayOf(PropTypes.shape({
+            sort:  PropTypes.string.isRequired,
+            query: PropTypes.string.isRequired,
+
+            count:  PropTypes.number.isRequired,
+            result: PropTypes.object.isRequired,
+
+            errorSort:  PropTypes.bool.isRequired,
+            errorQuery: PropTypes.bool.isRequired,
+
+            id:         PropTypes.number.isRequired,
+            collection: PropTypes.string.isRequired
+        })).isRequired,
+
+        dispatch: PropTypes.func.isRequired,
+
+        isReactive:       PropTypes.bool.isRequired,
+        isTextMode:       PropTypes.bool.isRequired,
+        isHelpVisible:    PropTypes.bool.isRequired,
+        isSidebarVisible: PropTypes.bool.isRequired,
+
+        snapshot:          PropTypes.object.isRequired,
+        snapshotTimestamp: PropTypes.number.isRequired,
+        snapshotRequested: PropTypes.bool.isRequired
     };
 
 
 
-    state = {
-        tab:  -1,
-        tabs: [],
-
-        isReactive: false,
-        isTextMode: false,
-        isHelpVisible: true,
-        isSidebarVisible: true
-    };
-
-
-
-    componentWillReceiveProps = ({ minimongo }) =>
-        this.setState({
-            tabs: this.state.tabs.map(tab =>
-                ({ ...tab, ...this.getResult(tab.collection, tab.query, tab.sort, minimongo) })
-            )
-        });
+    componentDidMount = () =>
+        this.onRefresh()
     ;
+
+    componentWillReceiveProps = ({ snapshot, snapshotTimestamp }) => {
+        if (this.props.snapshotTimestamp < snapshotTimestamp) {
+            this.props.dispatch({
+                tabs: this.props.tabs.map(tab =>
+                    ({ ...tab, ...this.getResult(tab.collection, tab.query, tab.sort, snapshot) })
+                )
+            });
+        }
+    };
 
 
 
@@ -47,27 +63,27 @@ export default class MiniMongoExplorer extends Component {
         <section className="window">
             <section className="window-content">
                 <section className="pane-group">
-                    {this.state.isSidebarVisible &&
+                    {this.props.isSidebarVisible &&
                         <Sidebar collections={this.getCollections()} onTabOpen={this.onTabOpen} />
                     }
 
-                    {this.state.isHelpVisible
+                    {this.props.isHelpVisible
                         ? <Help />
                         : (
-                            <View tab={this.state.tab} tabs={this.state.tabs} onTabClose={this.onTabClose} onTabSelect={this.onTabSelect}>
+                            <View tab={this.props.tab} tabs={this.props.tabs} onTabClose={this.onTabClose} onTabSelect={this.onTabSelect}>
                                 {this.getTab() && <Query tab={this.getTab()} onQuery={this.onQuery} onSort={this.onSort} />}
-                                {this.getTab() && <Result data={this.getTab().result} isTextMode={this.state.isTextMode} />}
+                                {this.getTab() && <Result data={this.getTab().result} isTextMode={this.props.isTextMode} />}
                             </View>
                         )
                     }
                 </section>
             </section>
 
-            <Toolbar isHelpVisible={this.state.isHelpVisible}
-                     isReactive={this.state.isReactive}
-                     isSidebarVisible={this.state.isSidebarVisible}
-                     isTextMode={this.state.isTextMode}
-                     onRefresh={this.props.refresh}
+            <Toolbar isHelpVisible={this.props.isHelpVisible}
+                     isReactive={this.props.isReactive}
+                     isSidebarVisible={this.props.isSidebarVisible}
+                     isTextMode={this.props.isTextMode}
+                     onRefresh={this.onRefresh}
                      onTabClose={this.onTabClose}
                      onToggleHelp={this.onToggleHelp}
                      onToggleReactivity={this.onToggleReactivity}
@@ -80,9 +96,9 @@ export default class MiniMongoExplorer extends Component {
 
 
     getCollections = () =>
-        Object.keys(this.props.minimongo)
+        Object.keys(this.props.snapshot)
             .sort()
-            .map(collection => ({ name: collection, count: Object.keys(this.props.minimongo[collection]).length }));
+            .map(collection => ({ name: collection, count: Object.keys(this.props.snapshot[collection]).length }));
     ;
 
     getId = doc =>
@@ -91,12 +107,12 @@ export default class MiniMongoExplorer extends Component {
             : doc._id._str
     ;
 
-    getResult = (collection, query = '{}', sort = '{}', minimongo = this.props.minimongo) => {
+    getResult = (collection, query = '{}', sort = '{}', snapshot = this.props.snapshot) => {
         let sorter  = safeDocumentSorter(sort);
         let matcher = safeDocumentMatcher(query);
 
-        let documentsArray = Object.keys(minimongo[collection])
-            .map(_id => minimongo[collection][_id])
+        let documentsArray = Object.keys(snapshot[collection])
+            .map(_id => snapshot[collection][_id])
             .filter(matcher.match)
             .sort(sorter.match);
 
@@ -115,25 +131,31 @@ export default class MiniMongoExplorer extends Component {
     };
 
     getTab = () =>
-        this.state.tabs.filter(tab => tab.id === this.state.tab)[0]
+        this.props.tabs.filter(tab => tab.id === this.props.tab)[0]
     ;
 
 
 
     onQuery = query =>
-        this.setState({
-            tabs: this.state.tabs.map(tab =>
-                tab.id === this.state.tab
+        this.props.dispatch({
+            tabs: this.props.tabs.map(tab =>
+                tab.id === this.props.tab
                     ? ({ ...tab, ...this.getResult(tab.collection, query, tab.sort) })
                     : tab
             )
         })
     ;
 
+    onRefresh = () =>
+        this.props.dispatch({
+            snapshotRequested: true
+        });
+    ;
+
     onSort = sort =>
-        this.setState({
-            tabs: this.state.tabs.map(tab =>
-                tab.id === this.state.tab
+        this.props.dispatch({
+            tabs: this.props.tabs.map(tab =>
+                tab.id === this.props.tab
                     ? ({ ...tab, ...this.getResult(tab.collection, tab.query, sort) })
                     : tab
             )
@@ -141,51 +163,48 @@ export default class MiniMongoExplorer extends Component {
     ;
 
     onTabClose = id =>
-        this.setState({
-            tab:  id ? this.state.tab === id ? -1 : this.state.tab  : -1,
-            tabs: id ? this.state.tabs.filter(tab => tab.id !== id) : []
+        this.props.dispatch({
+            tab:  id === -1 ? -1 : this.props.tab === id ? -1 : this.props.tab,
+            tabs: id === -1 ? [] : this.props.tabs.filter(tab => tab.id !== id)
         })
     ;
 
-    onTabOpen = collection =>
-        this.setState({
-            tabs: this.state.tabs.concat({ id: Date.now(), ...this.getResult(collection) })
-        }, () =>
-            this.setState({
-                tab: this.state.tabs[this.state.tabs.length - 1].id,
-                isHelpVisible: false
-            })
-        )
-    ;
+    onTabOpen = collection => {
+        const id = Date.now();
+
+        this.props.dispatch({
+            tab:  id,
+            tabs: this.props.tabs.concat({ id, ...this.getResult(collection) }),
+            isHelpVisible: false
+        })
+    };
 
     onTabSelect = id =>
-        this.setState({
+        this.props.dispatch({
             tab: id
         })
     ;
 
     onToggleHelp = previous =>
-        this.setState({
+        this.props.dispatch({
             isHelpVisible: !previous
         })
     ;
 
     onToggleReactivity = previous =>
-        this.setState({
+        this.props.dispatch({
             isReactive: !previous
-        }, () =>
-            this.props.reactive(!previous)
-        )
+        })
     ;
 
     onToggleSidebar = previous =>
-        this.setState({
+        this.props.dispatch({
             isSidebarVisible: !previous
         })
     ;
 
     onToggleTextMode = previous =>
-        this.setState({
+        this.props.dispatch({
             isTextMode: !previous
         })
     ;

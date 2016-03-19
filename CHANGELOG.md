@@ -1,3 +1,7 @@
+### v0.7.1
+- devtools: improved performance with many tabs opened
+- devtools: UI tweaks
+
 ### v0.7.0
 - devtools: reduced extension size
 - devtools: improved performance
