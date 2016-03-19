@@ -85,6 +85,10 @@ td {
     justify-content: center;
 }
 
+.pane-center .nav-group-item:active {
+  background-color: #fff;
+}
+
 .pane-flex {
     display: flex;
 
@@ -154,6 +158,10 @@ td {
 }
 
 .table-striped tr:nth-child(even) {
+  background-color: #f5f5f4 !important;
+}
+
+.table-striped thead tr:active {
   background-color: #f5f5f4 !important;
 }
 

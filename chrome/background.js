@@ -4,6 +4,7 @@ import 'file?name=images/icon32.png!../extension/assets/images/icon32.png';
 import 'file?name=images/icon64.png!../extension/assets/images/icon64.png';
 
 import store   from '../extension/lib/reduxStore';
+import parse   from '../extension/lib/injectParse';
 import { NEW } from '../extension/lib/reduxConstants';
 
 chrome.runtime.onConnect.addListener(port => {
@@ -13,9 +14,16 @@ chrome.runtime.onConnect.addListener(port => {
             subscribe = store.subscribe(() => {
                 let state = store.getState()[message.payload.id];
                 if (state) {
-                    port.postMessage(state);
+                    port.postMessage(JSON.stringify(state));
                 }
             });
+        }
+
+        if (message.diff) {
+            message.payload = {
+                ...message.payload,
+                ...parse(message.diff)
+            };
         }
 
         store.dispatch(message);
@@ -35,6 +43,6 @@ chrome.runtime.onConnect.addListener(port => {
 
 chrome.runtime.onMessage.addListener((message, sender) => {
     if (sender.tab && sender.tab.id) {
-        store.dispatch({ type: message.type, payload: { ...message.payload, id: sender.tab.id } });
+        store.dispatch({ type: message.type, payload: { ...parse(message.payload), id: sender.tab.id } });
     }
 });

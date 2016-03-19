@@ -1,3 +1,7 @@
+### v0.8.1
+- devtools: `Date` fields fix
+- devtools: UI tweaks
+
 ### v0.8.0
 - devtools: subscriptions listing
 - devtools: case insensitive collections sorting

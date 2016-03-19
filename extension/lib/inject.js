@@ -11,7 +11,7 @@ export default `
             if (collections) {
                 window.postMessage({
                     type: '${SET}',
-                    payload: {
+                    payload: JSON.stringify({
                         snapshotTimestamp: Date.now(),
                         snapshotRequested: false,
                         snapshot: Object
@@ -23,7 +23,7 @@ export default `
 
                                 return snapshot;
                             }, {})
-                    }
+                    })
                 }, '*');
             }
         };
@@ -33,7 +33,7 @@ export default `
             if (subscriptions) {
                 window.postMessage({
                     type: '${SET}',
-                    payload: {
+                    payload: JSON.stringify({
                         subscriptions: Object
                             .keys(subscriptions)
                             .reduce(function (snapshot, subscription) {
@@ -45,7 +45,7 @@ export default `
 
                                 return snapshot;
                             }, {})
-                    }
+                    })
                 }, '*');
             }
         };
