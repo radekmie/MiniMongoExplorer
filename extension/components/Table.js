@@ -5,7 +5,7 @@ import ObjectInspector from 'react-object-inspector';
 import translations from '../assets/translations/en';
 
 const Table = ({ data }) =>
-    <section className="pane">
+    <section className="pane pane-scroll">
         <table className="table-striped">
             <thead>
                 <tr>

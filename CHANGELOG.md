@@ -1,3 +1,6 @@
+### v0.8.4
+- devtools: subscriptions listing is selectable
+
 ### v0.8.3
 - devtools: subscriptions listing fix
 

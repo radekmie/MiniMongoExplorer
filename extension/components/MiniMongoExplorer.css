@@ -115,7 +115,8 @@ td {
     cursor: auto;
 }
 
-.pane-scroll > * {
+.pane-scroll > div,
+.pane-scroll > pre {
     padding: 5px;
 }
 
