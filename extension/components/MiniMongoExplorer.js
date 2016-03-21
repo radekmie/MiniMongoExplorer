@@ -47,10 +47,6 @@ export default class MiniMongoExplorer extends Component {
 
 
 
-    componentDidMount = () =>
-        this.onRefresh()
-    ;
-
     componentWillReceiveProps = ({ snapshot, snapshotTimestamp }) => {
         if (this.props.snapshotTimestamp < snapshotTimestamp) {
             this.props.dispatch({

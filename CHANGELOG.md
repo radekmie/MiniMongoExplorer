@@ -1,3 +1,7 @@
+### v0.8.2
+- devtools: improved performance
+- devtools: reduced memory usage
+
 ### v0.8.1
 - devtools: `Date` fields fix
 - devtools: UI tweaks

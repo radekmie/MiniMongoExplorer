@@ -1,7 +1,7 @@
-chrome.runtime.onMessage.addListener(message => window.postMessage({ ...message, duplex: true }, '*'));
+chrome.runtime.onMessage.addListener(message => window.postMessage(message, '*'));
 
 window.addEventListener('message', event => {
-    if (event.source === window && event.data.duplex === undefined && event.data.payload && event.data.type) {
-        chrome.runtime.sendMessage(event.data);
+    if (event.source === window && event.data.message && event.data.process === true) {
+        chrome.runtime.sendMessage(event.data.message);
     }
 });
