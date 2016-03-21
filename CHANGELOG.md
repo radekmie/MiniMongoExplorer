@@ -1,3 +1,6 @@
+### v0.8.5
+- devtools: reactive mode fallback
+
 ### v0.8.4
 - devtools: subscriptions listing is selectable
 

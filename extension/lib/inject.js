@@ -1,18 +1,47 @@
 import { DEL, NEW, SET } from './reduxConstants';
 
-export default `
-    (function () {
-        if (typeof Meteor === 'undefined') {
-            return;
-        }
+export default '(' + function (DEL, NEW, SET) {
+    if (typeof Meteor === 'undefined') {
+        return;
+    }
 
-        var sendSnapshot = function () {
-            var collections = Meteor.connection._mongo_livedata_collections;
-            if (collections) {
-                window.postMessage({
-                    process: true,
-                    message: JSON.stringify({
-                        type: '${SET}',
+    var snapshotTracker = typeof Tracker !== 'undefined' && Tracker.autorun;
+    var snapshotActions = [
+        {
+            hook: function (run) {
+                if (snapshotTracker) {
+                    this.computation = Tracker.autorun(function () {
+                        var collections = Meteor.connection._mongo_livedata_collections;
+                        if (collections) {
+                            Object.keys(collections).forEach(function (collection) {
+                                collections[collection].find({}, { tranform: null }).fetch();
+                            });
+                        }
+
+                        Tracker.afterFlush(run);
+                    });
+                } else {
+                    this.interval = setInterval(run, 1000);
+                }
+            },
+
+            stop: function () {
+                if (this.computation) {
+                    this.computation.stop();
+                    this.computation = undefined;
+                }
+
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = undefined;
+                }
+            },
+
+            data: function () {
+                var collections = Meteor.connection._mongo_livedata_collections;
+                if (collections) {
+                    return {
+                        type: SET,
                         payload: {
                             snapshotTimestamp: Date.now(),
                             snapshotRequested: false,
@@ -26,18 +55,45 @@ export default `
                                     return snapshot;
                                 }, {})
                         }
-                    })
-                }, '*');
+                    };
+                }
             }
-        };
+        },
+        {
+            hook: function (run) {
+                if (snapshotTracker) {
+                    this.computation = Tracker.autorun(function () {
+                        var subscriptions = Meteor.connection._subscriptions;
+                        if (subscriptions) {
+                            Object.keys(subscriptions).forEach(function (subscription) {
+                                subscriptions[subscription].readyDeps.depend();
+                            });
 
-        var sendSubscriptions = function () {
-            var subscriptions = Meteor.connection._subscriptions;
-            if (subscriptions) {
-                window.postMessage({
-                    process: true,
-                    message: JSON.stringify({
-                        type: '${SET}',
+                            Tracker.afterFlush(run);
+                        }
+                    });
+                }
+
+                this.interval = setInterval(run, 1000);
+            },
+
+            stop: function () {
+                if (this.computation) {
+                    this.computation.stop();
+                    this.computation = undefined;
+                }
+
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = undefined;
+                }
+            },
+
+            data: function () {
+                var subscriptions = Meteor.connection._subscriptions;
+                if (subscriptions) {
+                    return {
+                        type: SET,
                         payload: {
                             subscriptions: Object
                                 .keys(subscriptions)
@@ -51,86 +107,60 @@ export default `
                                     return snapshot;
                                 }, {})
                         }
-                    })
-                }, '*');
-            }
-        };
-
-        var computation1;
-        var computation2;
-        var computation3;
-        var computationStart = function () {
-            if (typeof Tracker === 'undefined') {
-                return;
-            }
-
-            computationStop();
-
-            computation1 = Tracker.autorun(function () {
-                var collections = Meteor.connection._mongo_livedata_collections;
-                if (collections) {
-                    Object.keys(collections).forEach(function (collection) {
-                        collections[collection].find({}, { tranform: null }).fetch();
-                    });
-
-                    Tracker.afterFlush(sendSnapshot);
+                    };
                 }
-            });
+            }
+        }
+    ];
 
-            computation2 = Tracker.autorun(function () {
-                var subscriptions = Meteor.connection._subscriptions;
-                if (subscriptions) {
-                    Object.keys(subscriptions).forEach(function (subscription) {
-                        subscriptions[subscription].readyDeps.depend();
-                    });
-
-                    Tracker.afterFlush(sendSubscriptions);
+    var snapshotActionsRun = function (once) {
+        snapshotActions.forEach(function (action) {
+            var send = function () {
+                var data = action.data();
+                if (data) {
+                    window.postMessage({
+                        process: true,
+                        message: JSON.stringify(data)
+                    }, '*');
                 }
-            });
+            };
 
-            computation3 = setInterval(sendSubscriptions, 1000);
-        };
-        var computationStop = function () {
-            if (computation1) {
-                computation1.stop();
-                computation1 = null;
+            if (!once && action.hook) {
+                action.hook(send);
+            } else {
+                send();
             }
+        });
+    };
 
-            if (computation2) {
-                computation2.stop();
-                computation2 = null;
+    var snapshotActionsStop = function () {
+        snapshotActions.forEach(function (action) {
+            if (action.stop) {
+                action.stop();
             }
+        });
+    };
 
-            if (computation3) {
-                clearInterval(computation3);
-                computation3 = null;
-            }
-        };
-
-        var onMessage = function (event) {
-            if (event.data) {
-                if (event.data.type === '${DEL}') {
-                    computation();
-                    computationStop();
-
+    var onMessage = function (event) {
+        if (event.data) {
+            switch (event.data.type) {
+                case DEL:
+                    snapshotActionsStop();
                     window.removeEventListener('message', onMessage);
-                }
+                break;
 
-                if (event.data.type === '${NEW}') {
-                    sendSnapshot();
-                    sendSubscriptions();
-                }
+                case NEW:
+                    snapshotActionsRun(true);
+                break;
 
-                if (event.data.type === '${SET}') {
-                    event.data.payload.isReactive === true  && computationStart();
-                    event.data.payload.isReactive === false && computationStop();
-
-                    event.data.payload.snapshotRequested && sendSnapshot();
-                    event.data.payload.snapshotRequested && sendSubscriptions();
-                }
+                case SET:
+                    event.data.payload.isReactive === true  && snapshotActionsRun();
+                    event.data.payload.isReactive === false && snapshotActionsStop();
+                    event.data.payload.snapshotRequested && snapshotActionsRun(true);
+                break;
             }
-        };
+        }
+    };
 
-        window.addEventListener('message', onMessage, false);
-    })()
-`;
+    window.addEventListener('message', onMessage, false);
+} + `)('${DEL}', '${NEW}', '${SET}')`;
