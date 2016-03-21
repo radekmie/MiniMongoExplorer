@@ -6,7 +6,7 @@ export default `
             return;
         }
 
-        var snapshot = function () {
+        var sendSnapshot = function () {
             var collections = Meteor.connection._mongo_livedata_collections;
             if (collections) {
                 window.postMessage({
@@ -31,7 +31,7 @@ export default `
             }
         };
 
-        var subscriptions = function () {
+        var sendSubscriptions = function () {
             var subscriptions = Meteor.connection._subscriptions;
             if (subscriptions) {
                 window.postMessage({
@@ -73,7 +73,7 @@ export default `
                         collections[collection].find({}, { tranform: null }).fetch();
                     });
 
-                    Tracker.afterFlush(snapshot);
+                    Tracker.afterFlush(sendSnapshot);
                 }
             });
 
@@ -84,11 +84,11 @@ export default `
                         subscriptions[subscription].readyDeps.depend();
                     });
 
-                    Tracker.afterFlush(subscriptions);
+                    Tracker.afterFlush(sendSubscriptions);
                 }
             });
 
-            computation3 = setInterval(subscriptions, 1000);
+            computation3 = setInterval(sendSubscriptions, 1000);
         };
         var computationStop = function () {
             if (computation1) {
@@ -117,16 +117,16 @@ export default `
                 }
 
                 if (event.data.type === '${NEW}') {
-                    snapshot();
-                    subscriptions();
+                    sendSnapshot();
+                    sendSubscriptions();
                 }
 
                 if (event.data.type === '${SET}') {
                     event.data.payload.isReactive === true  && computationStart();
                     event.data.payload.isReactive === false && computationStop();
 
-                    event.data.payload.snapshotRequested && snapshot();
-                    event.data.payload.snapshotRequested && subscriptions();
+                    event.data.payload.snapshotRequested && sendSnapshot();
+                    event.data.payload.snapshotRequested && sendSubscriptions();
                 }
             }
         };

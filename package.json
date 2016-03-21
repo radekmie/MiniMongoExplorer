@@ -1,6 +1,6 @@
 {
     "name": "MiniMongoExplorer",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "private": true,
 
     "contributors": [
@@ -23,7 +23,7 @@
         "babel-preset-stage-0": "^6.5.0",
         "css-loader": "^0.23.1",
         "file-loader": "^0.8.5",
-        "html-webpack-plugin": "^2.9.0",
+        "html-webpack-plugin": "^2.12.0",
         "marsdb": "^0.6.9",
         "redux": "^3.3.1",
         "react": "^15.0.0-rc.2",

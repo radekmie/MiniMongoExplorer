@@ -1,3 +1,6 @@
+### v0.8.3
+- devtools: subscriptions listing fix
+
 ### v0.8.2
 - devtools: improved performance
 - devtools: reduced memory usage
