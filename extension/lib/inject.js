@@ -1,10 +1,11 @@
 import { DEL, NEW, SET } from './reduxConstants';
 
 export default '(' + function (DEL, NEW, SET) {
-    if (typeof Meteor === 'undefined') {
+    if (typeof Meteor === 'undefined' && Meteor.connection) {
         return;
     }
 
+    var snapshotLocals  = typeof Mongo   !== 'undefined' && new Mongo.Collection(null)._driver.noConnCollections;
     var snapshotTracker = typeof Tracker !== 'undefined' && Tracker.autorun;
     var snapshotActions = [
         {
@@ -15,6 +16,13 @@ export default '(' + function (DEL, NEW, SET) {
                         if (collections) {
                             Object.keys(collections).forEach(function (collection) {
                                 collections[collection].find({}, { tranform: null }).fetch();
+                            });
+                        }
+
+                        var locals = snapshotLocals;
+                        if (locals) {
+                            Object.keys(locals).forEach(function (collection) {
+                                locals[collection].find({}, { tranform: null }).fetch();
                             });
                         }
 
@@ -47,10 +55,17 @@ export default '(' + function (DEL, NEW, SET) {
                             snapshotRequested: false,
                             snapshot: Object
                                 .keys(collections)
+                                .concat(snapshotLocals ? Object.keys(snapshotLocals) : [])
                                 .reduce(function (snapshot, collection) {
-                                    snapshot[collection] = collections[collection]
-                                        .find({}, { transform: null })
-                                        .fetch();
+                                    if (snapshotLocals && snapshotLocals[collection]) {
+                                        snapshot[collection] = snapshotLocals[collection]
+                                            .find({}, { transform: null })
+                                            .fetch();
+                                    } else {
+                                        snapshot[collection] = collections[collection]
+                                            .find({}, { transform: null })
+                                            .fetch();
+                                    }
 
                                     return snapshot;
                                 }, {})

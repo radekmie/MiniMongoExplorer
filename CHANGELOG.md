@@ -1,3 +1,6 @@
+### v0.8.6
+- devtools: support for named local collections
+
 ### v0.8.5
 - devtools: reactive mode fallback
 
