@@ -1,21 +1,19 @@
 import DocumentSorter from 'marsdb/dist/DocumentSorter';
 
-const defaultMatch = () => 0;
+const defaultAction = () => 0;
 
-export default sort => {
+export default query => {
     try {
-        const sorter = new DocumentSorter(eval(`(${sort})`));
+        let parsed = eval(`(${query})`);
+        if (parsed && parsed.sort) {
+            const helper = new DocumentSorter(parsed.sort);
+            const action = helper.getComparator()
 
-        return {
-            text:  sort,
-            error: false,
-            match: sorter.getComparator()
-        };
+            return {action, error: false};
+        }
+
+        return {action: defaultAction, error: false};
     } catch (_) {
-        return {
-            text:  sort,
-            error: true,
-            match: defaultMatch
-        };
+        return {action: defaultAction, error: true};
     }
 };

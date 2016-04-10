@@ -1,13 +1,13 @@
-import DocumentMatcher from 'marsdb/dist/DocumentMatcher';
+import DocumentProjector from 'marsdb/dist/DocumentProjector';
 
-const defaultAction = () => true;
+const defaultAction = doc => doc;
 
 export default query => {
     try {
         let parsed = eval(`(${query})`);
-        if (parsed && parsed.query) {
-            const helper = new DocumentMatcher(parsed.query);
-            const action = doc => helper.documentMatches(doc).result;
+        if (parsed && parsed.fields) {
+            const helper = new DocumentProjector(parsed.fields);
+            const action = doc => helper.project(doc);
 
             return {action, error: false};
         }

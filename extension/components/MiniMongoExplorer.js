@@ -2,8 +2,9 @@ import React         from 'react';
 import { Component } from 'react';
 import { PropTypes } from 'react';
 
-import safeDocumentSorter  from '../lib/safeDocumentSorter';
-import safeDocumentMatcher from '../lib/safeDocumentMatcher';
+import safeDocumentSorter    from '../lib/safeDocumentSorter';
+import safeDocumentMatcher   from '../lib/safeDocumentMatcher';
+import safeDocumentProjector from '../lib/safeDocumentProjector';
 
 import Help    from './Help';
 import View    from './View';
@@ -17,14 +18,11 @@ export default class MiniMongoExplorer extends Component {
     static propTypes = {
         tab:  PropTypes.number.isRequired,
         tabs: PropTypes.arrayOf(PropTypes.shape({
-            sort:  PropTypes.string.isRequired,
+            error: PropTypes.bool.isRequired,
             query: PropTypes.string.isRequired,
 
             count:  PropTypes.number.isRequired,
             result: PropTypes.object.isRequired,
-
-            errorSort:  PropTypes.bool.isRequired,
-            errorQuery: PropTypes.bool.isRequired,
 
             id:         PropTypes.number.isRequired,
             collection: PropTypes.string.isRequired
@@ -51,7 +49,7 @@ export default class MiniMongoExplorer extends Component {
         if (this.props.snapshotTimestamp < snapshotTimestamp) {
             this.props.dispatch({
                 tabs: this.props.tabs.map(tab =>
-                    ({ ...tab, ...this.getResult(tab.collection, tab.query, tab.sort, snapshot) })
+                    ({ ...tab, ...this.getResult(tab.collection, tab.query, snapshot) })
                 )
             });
         }
@@ -73,7 +71,7 @@ export default class MiniMongoExplorer extends Component {
                             ? <Table data={this.props.subscriptions} />
                             : (
                                 <View tab={this.props.tab} tabs={this.props.tabs} onTabClose={this.onTabClose} onTabSelect={this.onTabSelect}>
-                                    {this.getTab() && <Query tab={this.getTab()} onQuery={this.onQuery} onSort={this.onSort} />}
+                                    {this.getTab() && <Query error={this.getTab().error} query={this.getTab().query} onQuery={this.onQuery} />}
                                     {this.getTab() && <Result data={this.getTab().result} isTextMode={this.props.isTextMode} />}
                                 </View>
                             )
@@ -106,28 +104,29 @@ export default class MiniMongoExplorer extends Component {
     ;
 
     getId = doc =>
-        typeof doc._id === 'string'
-            ? doc._id
-            : doc._id._str
+        doc._id
+            ? typeof doc._id === 'string'
+                ? doc._id
+                : doc._id._str
+            : `noID#${Math.random().toFixed(15).slice(2)}`
     ;
 
-    getResult = (collection, query = '{}', sort = '{}', snapshot = this.props.snapshot) => {
-        let sorter  = safeDocumentSorter(sort);
-        let matcher = safeDocumentMatcher(query);
+    getResult = (collection, query = '{query: {}, fields: {}, sort: {}}', snapshot = this.props.snapshot) => {
+        let sorter    = safeDocumentSorter(query);
+        let matcher   = safeDocumentMatcher(query);
+        let projector = safeDocumentProjector(query);
 
         let documentsArray = Object.keys(snapshot[collection])
             .map(_id => snapshot[collection][_id])
-            .filter(matcher.match)
-            .sort(sorter.match);
+            .filter(matcher.action)
+            .sort(sorter.action)
+            .map(projector.action);
 
         return {
             collection,
 
-            sort:  sorter.text,
-            query: matcher.text,
-
-            errorSort:  sorter.error,
-            errorQuery: matcher.error,
+            query,
+            error: sorter.error || matcher.error || projector.error,
 
             count:  documentsArray.length,
             result: documentsArray.reduce((result, doc) => ({ ...result, [this.getId(doc)]: doc }), {})
@@ -144,7 +143,7 @@ export default class MiniMongoExplorer extends Component {
         this.props.dispatch({
             tabs: this.props.tabs.map(tab =>
                 tab.id === this.props.tab
-                    ? ({ ...tab, ...this.getResult(tab.collection, query, tab.sort) })
+                    ? ({ ...tab, ...this.getResult(tab.collection, query) })
                     : tab
             )
         })
@@ -154,16 +153,6 @@ export default class MiniMongoExplorer extends Component {
         this.props.dispatch({
             snapshotRequested: true
         });
-    ;
-
-    onSort = sort =>
-        this.props.dispatch({
-            tabs: this.props.tabs.map(tab =>
-                tab.id === this.props.tab
-                    ? ({ ...tab, ...this.getResult(tab.collection, tab.query, sort) })
-                    : tab
-            )
-        })
     ;
 
     onTabClose = id =>

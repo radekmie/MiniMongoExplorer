@@ -5,16 +5,15 @@ import Textarea from './Textarea';
 
 import translations from '../assets/translations/en';
 
-const Query = ({ tab, onQuery, onSort }) =>
+const Query = ({ error, query, onQuery }) =>
     <section className="form-group">
-        <Textarea error={tab.errorQuery} title={translations.ui.query} value={tab.query} onChange={onQuery} />
-        <Textarea error={tab.errorSort}  title={translations.ui.sort}  value={tab.sort}  onChange={onSort}  />
+        <Textarea error={error}  title={translations.ui.query}  value={query}  onChange={onQuery} />
     </section>
 ;
 
 Query.propTypes = {
-    tab: PropTypes.object.isRequired,
-    onSort:  PropTypes.func.isRequired,
+    error: PropTypes.bool.isRequired,
+    query: PropTypes.string.isRequired,
     onQuery: PropTypes.func.isRequired
 };
 

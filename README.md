@@ -11,6 +11,7 @@
 
 - collections counts
 - collections listing
+- limiting fields
 - live sorting
 - live querying
 - multiple tabs
@@ -20,7 +21,7 @@
 
 ### How to install:
 
-- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.8.6.crx)
+- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.9.0.crx)
 - open `chrome://extensions`
 - drag and drop `.crx` file into tab
 

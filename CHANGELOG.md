@@ -1,3 +1,6 @@
+### v0.9.0
+- devtools: limiting fields
+
 ### v0.8.6
 - devtools: support for named local collections
 

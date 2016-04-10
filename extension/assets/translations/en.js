@@ -31,7 +31,6 @@ export default {
         no:          '✗',
         query:       'Query',
         refresh:     'Refresh snapshot',
-        sort:        'Sort',
         yes:         '✔'
     }
 };

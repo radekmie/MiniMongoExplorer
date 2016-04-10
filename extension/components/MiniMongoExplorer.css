@@ -52,8 +52,6 @@ td {
 
     margin: 0;
 
-    display: flex;
-
     flex-shrink: 0;
 }
 
