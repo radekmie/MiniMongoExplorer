@@ -1,3 +1,6 @@
+### v1.0.0
+- devtools: application in chrome web store
+
 ### v0.9.0
 - devtools: limiting fields
 

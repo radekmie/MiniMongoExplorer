@@ -2,10 +2,10 @@
 
 ### Handy Google Chrome extension for reviewing MiniMongo.
 
-![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-1.png)
-![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-2.png)
-![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-3.png)
-![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-4.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/github-1.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/github-2.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/github-3.png)
+![MiniMongoExplorer](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/github-4.png)
 
 ### Features:
 
@@ -19,12 +19,9 @@
 - object inspector mode
 - reactive mode
 
-### How to install:
+### Installation:
 
-- download [latest `.crx` file](https://raw.githubusercontent.com/radekmie/MiniMongoExplorer/master/binary/MiniMongoExplorer-0.9.0.crx)
-- open `chrome://extensions`
-- drag and drop `.crx` file into tab
-
+Install MiniMongoExplorer from [Chrome Web Store](https://chrome.google.com/webstore/detail/minimongoexplorer/bpbalpgdnkieljogofnfjmgcnjcaiheg).
 
 ### Development:
 
