@@ -8,17 +8,29 @@ export default ({ directory, entry, pages = [] }) => ({
     output: { path: join(__dirname, 'build', directory), filename: '[name].js' },
     module: {
         loaders: [
-            { exclude: /node_modules/, loader: ['url'],          test: /\.woff$/ },
-            { exclude: /node_modules/, loader: ['babel'],        test: /\.js$/ },
-            { exclude: /node_modules/, loader: ['style', 'css'], test: /\.css$/ }
+            { exclude: /node_modules/, loader: 'url',       test: /\.woff$/ },
+            { exclude: /node_modules/, loader: 'babel',     test: /\.js$/ },
+            { exclude: /node_modules/, loader: 'style!css', test: /\.css$/ }
         ]
     },
 
     plugins: [
-        new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' }),
-        new webpack.LoaderOptionsPlugin({ minimize: true }),
-        new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }, sourceMap: false }),
+        new webpack.DefinePlugin({
+            process: {
+                env: {
+                    NODE_ENV: JSON.stringify('production')
+                }
+            }
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+            comments: false,
+            compress: {
+                warnings: false
+            },
+            sourceMap: false
+        }),
         new webpack.optimize.OccurrenceOrderPlugin(),
+        new webpack.optimize.DedupePlugin(),
 
         ...pages.map(chunk => new HTMLPlugin({
             title: null,

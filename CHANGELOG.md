@@ -1,3 +1,6 @@
+### v1.0.1
+- devtools: fields are now sorted
+
 ### v1.0.0
 - devtools: application in chrome web store
 
