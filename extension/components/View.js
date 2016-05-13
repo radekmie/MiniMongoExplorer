@@ -6,10 +6,17 @@ const View = ({ children, tab, tabs, onTabClose, onTabSelect }) =>
         {tabs.length > 0 &&
             <section className="tab-group">
                 {tabs.map(({ collection, count, id }) =>
-                    <section key={id} className={`tab-item${id === tab ? ' active' : ''}`} onClick={event => event.button == 1 ? onTabClose(id) : onTabSelect(id)}>
+                    <section
+                        className={`tab-item${id === tab ? ' active' : ''}`}
+                        key={id}
+                        onClick={event => (event.button == 1 ? onTabClose : onTabSelect)(id)}
+                    >
                         <i className="icon icon-cancel icon-close-tab" onClick={event => (event.stopPropagation(), onTabClose(id))} />
                         {collection}
-                        <span>{count}</span>
+
+                        <span>
+                            {count}
+                        </span>
                     </section>
                 )}
             </section>
@@ -20,11 +27,11 @@ const View = ({ children, tab, tabs, onTabClose, onTabSelect }) =>
 ;
 
 View.propTypes = {
-    tab:  PropTypes.number.isRequired,
-    tabs: PropTypes.array.isRequired,
-    children: PropTypes.node,
+    children:    PropTypes.node,
     onTabClose:  PropTypes.func.isRequired,
-    onTabSelect: PropTypes.func.isRequired
+    onTabSelect: PropTypes.func.isRequired,
+    tab:         PropTypes.number.isRequired,
+    tabs:        PropTypes.array.isRequired
 };
 
 export default View;

@@ -1,6 +1,6 @@
-import { DEL, NEW, SET } from './reduxConstants';
+import { ADD, CHA, DEL, NEW, REM, SET } from './reduxConstants';
 
-export default '(' + function (DEL, NEW, SET) {
+export default '(' + function (ADD, CHA, DEL, NEW, REM, SET) {
     if (typeof Meteor === 'undefined' && Meteor.connection) {
         return;
     }
@@ -10,65 +10,83 @@ export default '(' + function (DEL, NEW, SET) {
     var snapshotActions = [
         {
             hook: function (run) {
-                if (snapshotTracker) {
-                    this.computation = Tracker.autorun(function () {
-                        var collections = Meteor.connection._mongo_livedata_collections;
-                        if (collections) {
-                            Object.keys(collections).forEach(function (collection) {
-                                collections[collection].find({}, { tranform: null }).fetch();
-                            });
-                        }
+                this.observers = [];
 
-                        var locals = snapshotLocals;
-                        if (locals) {
-                            Object.keys(locals).forEach(function (collection) {
-                                locals[collection].find({}, { tranform: null }).fetch();
-                            });
-                        }
-
-                        Tracker.afterFlush(run);
+                var collections = Meteor.connection._mongo_livedata_collections;
+                if (collections) {
+                    Object.keys(collections).forEach(function (collection) {
+                        collections[collection].find({}, { transform: null }).observe({
+                            addedAt:   (doc,    index) => run(collection, ADD, { index: index, doc: doc }),
+                            changedAt: (doc, _, index) => run(collection, CHA, { index: index, doc: doc }),
+                            removedAt: (     _, index) => run(collection, REM, { index: index })
+                        });
                     });
-                } else {
-                    this.interval = setInterval(run, 1000);
+                }
+
+                if (snapshotLocals) {
+                    Object.keys(snapshotLocals).forEach(function (collection) {
+                        snapshotLocals[collection].find({}, { transform: null }).observe({
+                            addedAt:   (doc,    index) => run(collection, ADD, { index: index, doc: doc }),
+                            changedAt: (doc, _, index) => run(collection, CHA, { index: index, doc: doc }),
+                            removedAt: (     _, index) => run(collection, REM, { index: index })
+                        });
+                    });
                 }
             },
 
             stop: function () {
-                if (this.computation) {
-                    this.computation.stop();
-                    this.computation = undefined;
-                }
+                if (this.observers) {
+                    this.observers.forEach(function (observer) {
+                        observer.stop()
+                    });
 
-                if (this.interval) {
-                    clearInterval(this.interval);
-                    this.interval = undefined;
+                    this.observers = [];
                 }
             },
 
-            data: function () {
-                var collections = Meteor.connection._mongo_livedata_collections;
-                if (collections) {
+            data: function (collection, action, options) {
+                if (collection) {
+                    return {
+                        type: action,
+                        payload: {
+                            snapshotTimestamp: Date.now(),
+                            snapshotRequested: false,
+                            snapshot: {
+                                collection: collection,
+                                options:    options
+                            }
+                        }
+                    };
+                } else {
+                    var snapshot = {};
+
+                    var collections = Meteor.connection._mongo_livedata_collections;
+                    if (collections) {
+                        Object.keys(collections).forEach(function (collection) {
+                            var docs = collections[collection]._docs._map;
+
+                            snapshot[collection] = Object
+                                .keys(docs)
+                                .reduce((snapshot, _id) => snapshot.concat(docs[_id]), []);
+                        });
+                    }
+
+                    if (snapshotLocals) {
+                        Object.keys(snapshotLocals).forEach(function (collection) {
+                            var docs = snapshotLocals[collection]._docs._map;
+
+                            snapshot[collection] = Object
+                                .keys(docs)
+                                .reduce((snapshot, _id) => snapshot.concat(docs[_id]), []);
+                        });
+                    }
+
                     return {
                         type: SET,
                         payload: {
                             snapshotTimestamp: Date.now(),
                             snapshotRequested: false,
-                            snapshot: Object
-                                .keys(collections)
-                                .concat(snapshotLocals ? Object.keys(snapshotLocals) : [])
-                                .reduce(function (snapshot, collection) {
-                                    if (snapshotLocals && snapshotLocals[collection]) {
-                                        snapshot[collection] = snapshotLocals[collection]
-                                            .find({}, { transform: null })
-                                            .fetch();
-                                    } else {
-                                        snapshot[collection] = collections[collection]
-                                            .find({}, { transform: null })
-                                            .fetch();
-                                    }
-
-                                    return snapshot;
-                                }, {})
+                            snapshot: snapshot
                         }
                     };
                 }
@@ -77,16 +95,16 @@ export default '(' + function (DEL, NEW, SET) {
         {
             hook: function (run) {
                 if (snapshotTracker) {
-                    this.computation = Tracker.autorun(function () {
-                        var subscriptions = Meteor.connection._subscriptions;
-                        if (subscriptions) {
+                    var subscriptions = Meteor.connection._subscriptions;
+                    if (subscriptions) {
+                        this.computation = Tracker.autorun(function () {
                             Object.keys(subscriptions).forEach(function (subscription) {
                                 subscriptions[subscription].readyDeps.depend();
                             });
 
                             Tracker.afterFlush(run);
-                        }
-                    });
+                        });
+                    }
                 }
 
                 this.interval = setInterval(run, 1000);
@@ -107,23 +125,27 @@ export default '(' + function (DEL, NEW, SET) {
             data: function () {
                 var subscriptions = Meteor.connection._subscriptions;
                 if (subscriptions) {
-                    return {
-                        type: SET,
-                        payload: {
-                            subscriptions: Object
-                                .keys(subscriptions)
-                                .reduce(function (snapshot, subscription) {
-                                    snapshot[subscription] = {
-                                        name:   subscriptions[subscription].name,
-                                        ready:  subscriptions[subscription].ready,
-                                        params: subscriptions[subscription].params
-                                    };
+                    subscriptions = Object
+                        .keys(subscriptions)
+                        .reduce(function (snapshot, subscription) {
+                            snapshot[subscription] = {
+                                name:   subscriptions[subscription].name,
+                                ready:  subscriptions[subscription].ready,
+                                params: subscriptions[subscription].params
+                            };
 
-                                    return snapshot;
-                                }, {})
-                        }
-                    };
+                            return snapshot;
+                        }, {});
+                } else {
+                    subscriptions = {};
                 }
+
+                return {
+                    type: SET,
+                    payload: {
+                        subscriptions: subscriptions
+                    }
+                };
             }
         }
     ];
@@ -131,7 +153,7 @@ export default '(' + function (DEL, NEW, SET) {
     var snapshotActionsRun = function (once) {
         snapshotActions.forEach(function (action) {
             var send = function () {
-                var data = action.data();
+                var data = action.data.apply(undefined, arguments);
                 if (data) {
                     window.postMessage({
                         process: true,
@@ -178,4 +200,4 @@ export default '(' + function (DEL, NEW, SET) {
     };
 
     window.addEventListener('message', onMessage, false);
-} + `)('${DEL}', '${NEW}', '${SET}')`;
+} + `)('${ADD}', '${CHA}', '${DEL}', '${NEW}', '${REM}', '${SET}')`;

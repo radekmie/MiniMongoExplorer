@@ -1,6 +1,6 @@
 {
   "name": "MiniMongoExplorer",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "contributors": [
     {
@@ -20,11 +20,11 @@
     "babel-preset-stage-0": "^6.5.0",
     "css-loader": "^0.23.1",
     "file-loader": "^0.8.5",
-    "html-webpack-plugin": "^2.16.1",
+    "html-webpack-plugin": "^2.16.2",
     "marsdb": "^0.6.9",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
-    "react-object-inspector": "^0.2.1",
+    "react-inspector": "^1.0.0-beta.2",
     "redux": "^3.5.2",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",

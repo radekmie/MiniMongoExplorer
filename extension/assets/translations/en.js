@@ -1,7 +1,15 @@
 export default {
+    github: 'MiniMongoExplorer on GitHub',
+
     help: {
         toggle: 'Toggle help'
     },
+
+    mode: [
+        'Switch to table mode',
+        'Switch to text mode',
+        'Switch to object mode'
+    ],
 
     reactivity: {
         disable: 'Disable reactivity',
@@ -18,11 +26,6 @@ export default {
         params: 'Params',
         ready:  'Is ready',
         toggle: 'Toggle subscriptions table'
-    },
-
-    text: {
-        disable: 'Disable text mode',
-        enable:  'Enable text mode'
     },
 
     ui: {

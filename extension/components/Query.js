@@ -7,14 +7,14 @@ import translations from '../assets/translations/en';
 
 const Query = ({ error, query, onQuery }) =>
     <section className="form-group">
-        <Textarea error={error}  title={translations.ui.query}  value={query}  onChange={onQuery} />
+        <Textarea error={error} title={translations.ui.query} value={query} onChange={onQuery} />
     </section>
 ;
 
 Query.propTypes = {
-    error: PropTypes.bool.isRequired,
-    query: PropTypes.string.isRequired,
-    onQuery: PropTypes.func.isRequired
+    error:   PropTypes.bool.isRequired,
+    onQuery: PropTypes.func.isRequired,
+    query:   PropTypes.string.isRequired
 };
 
 export default Query;

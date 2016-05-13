@@ -1,19 +1,40 @@
-import React           from 'react';
-import { PropTypes }   from 'react';
-import ObjectInspector from 'react-object-inspector';
+import React               from 'react';
+import { PropTypes }       from 'react';
+import { TableInspector }  from 'react-inspector';
+import { ObjectInspector } from 'react-inspector';
 
-const Result = ({ data, isTextMode }) =>
+const columns = data => {
+    for (let property in data) {
+        return Object.keys(data[property]).filter(column => column !== '_id');
+    }
+};
+
+const Result = ({ data, mode }) =>
     <section className="pane-scroll">
-        {isTextMode
-            ? <pre>{JSON.stringify(data, null, 4).replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`)}</pre>
-            : <ObjectInspector initialExpandedPaths={['root']} data={data} />
-        }
+        {mode === 0 && (
+            <ObjectInspector data={data} expandLevel={1} />
+        )}
+
+        {mode === 1 && (
+            <section>
+                <TableInspector data={data} columns={columns(data)} />
+            </section>
+        )}
+
+        {mode === 2 && (
+            <pre>
+                {JSON
+                    .stringify(data, null, 4)
+                    .replace(/[\u00A0-\u9999<>\&]/gim, char => `&#${char.charCodeAt(0)};`)
+                }
+            </pre>
+        )}
     </section>
 ;
 
 Result.propTypes = {
     data: PropTypes.object.isRequired,
-    isTextMode: PropTypes.bool.isRequired
+    mode: PropTypes.number.isRequired
 };
 
 export default Result;

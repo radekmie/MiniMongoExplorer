@@ -1,3 +1,8 @@
+### v1.1.0
+- devtools: improved performance
+- devtools: limiting documents
+- devtools: new table view
+
 ### v1.0.1
 - devtools: fields are now sorted
 

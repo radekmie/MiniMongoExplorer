@@ -17,7 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
             port .postMessage({ type: SET, payload, id: chrome.devtools.inspectedWindow.tabId });
         };
 
-        store.subscribe(() => requestAnimationFrame(() => render(createElement(MiniMongoExplorer, { dispatch, ...store.getState() }), document.body)));
+        let renderId;
+        let renderDirect    = () => render(createElement(MiniMongoExplorer, { dispatch, ...store.getState() }), document.body);
+        let renderThrottled = () => {
+            if (renderId) {
+                cancelAnimationFrame(renderId);
+            }
+
+            renderId = requestAnimationFrame(renderDirect);
+        };
+
+        store.subscribe(renderThrottled);
 
         chrome.devtools.inspectedWindow.eval(inject, () => {
             port.onMessage.addListener(message => store.dispatch(parse(message)));

@@ -2,11 +2,12 @@ export default () => ({
     tab:  -1,
     tabs: [],
 
-    isReactive: false,
-    isTextMode: false,
+    mode: 0,
+
     isHelpVisible: true,
-    isTableVisible: false,
+    isReactive: false,
     isSidebarVisible: true,
+    isTableVisible: false,
 
     subscriptions: {},
 

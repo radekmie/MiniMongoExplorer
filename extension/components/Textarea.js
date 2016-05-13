@@ -3,9 +3,9 @@ import React, { Component, PropTypes } from 'react';
 export default class Textarea extends Component {
     static propTypes = {
         error:    PropTypes.bool.isRequired,
+        onChange: PropTypes.func.isRequired,
         title:    PropTypes.string.isRequired,
-        value:    PropTypes.string.isRequired,
-        onChange: PropTypes.func.isRequired
+        value:    PropTypes.string.isRequired
     };
 
     state = { value: '' };
@@ -19,12 +19,13 @@ export default class Textarea extends Component {
     ;
 
     render = () =>
-        <textarea className={`form-control${this.props.error ? ' form-error' : ''}`}
-                  rows="1"
-                  spellCheck={false}
-                  title={this.props.title}
-                  value={this.state.value}
-                  onChange={event => this.onChange(event.currentTarget.value)}
+        <textarea
+            className={`form-control${this.props.error ? ' form-error' : ''}`}
+            onChange={event => this.onChange(event.currentTarget.value)}
+            rows="1"
+            spellCheck={false}
+            title={this.props.title}
+            value={this.state.value}
         />
     ;
 

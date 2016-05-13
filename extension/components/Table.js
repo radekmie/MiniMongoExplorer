@@ -1,6 +1,6 @@
-import React           from 'react';
-import { PropTypes }   from 'react';
-import ObjectInspector from 'react-object-inspector';
+import React               from 'react';
+import { PropTypes }       from 'react';
+import { ObjectInspector } from 'react-inspector';
 
 import translations from '../assets/translations/en';
 
