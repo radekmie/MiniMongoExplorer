@@ -13,6 +13,6 @@ let panelNeededCheck = () =>
     })
 ;
 
-panelNeededId = setInterval(panelNeededCheck, 1000);
+panelNeededId = setInterval(panelNeededCheck, 100);
 
 chrome.devtools.network.onNavigated.addListener(panelNeededCheck);

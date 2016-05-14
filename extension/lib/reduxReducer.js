@@ -5,7 +5,7 @@ export default (state = {}, { type, payload }) => {
 
     switch (type) {
         case DEL: return {};
-        case NEW: return payload;
+        case NEW: return { ...payload, tabs: [] };
         case SET: return { ...state, ...payload };
 
         case ADD:

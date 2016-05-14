@@ -1,3 +1,6 @@
+### v1.1.1
+- devtools: persistent state - no need to refresh devtools - even between pages
+
 ### v1.1.0
 - devtools: improved performance
 - devtools: limiting documents
