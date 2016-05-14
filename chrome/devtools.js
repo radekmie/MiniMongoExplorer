@@ -2,7 +2,7 @@ let panelNeeded = true;
 let panelNeededId = -1;
 let panelNeededCheck = () =>
     panelNeeded && chrome.devtools.inspectedWindow.eval('!!Meteor.connection.status', isMeteor => {
-        if (isMeteor) {
+        if (isMeteor && panelNeeded) {
             chrome.devtools.panels.create('MiniMongoExplorer', 'images/icon64.png', 'panel.html', () => {
                 clearInterval(panelNeededId);
 

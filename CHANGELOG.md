@@ -1,3 +1,6 @@
+### v1.1.2
+- devtools: prevent panel duplication
+
 ### v1.1.1
 - devtools: persistent state - no need to refresh devtools - even between pages
 
