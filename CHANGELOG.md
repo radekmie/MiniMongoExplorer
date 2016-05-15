@@ -1,3 +1,6 @@
+### v1.1.3
+- devtools: prevent panel duplication
+
 ### v1.1.2
 - devtools: prevent panel duplication
 
