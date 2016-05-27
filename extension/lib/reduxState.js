@@ -2,16 +2,19 @@ export default () => ({
     tab:  -1,
     tabs: [],
 
+    isHelpView: true,
+    isMethodsView: false,
+    isReactive: false,
+    isSidebarView: true,
+    isSubscriptionsView: false,
+
     mode: 0,
 
-    isHelpVisible: true,
-    isReactive: false,
-    isSidebarVisible: true,
-    isTableVisible: false,
-
-    subscriptions: {},
+    methods: [],
 
     snapshot: {},
     snapshotRequested: false,
-    snapshotTimestamp: Date.now()
+    snapshotTimestamp: Date.now(),
+
+    subscriptions: {}
 });

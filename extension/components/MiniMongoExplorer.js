@@ -6,13 +6,14 @@ import safeDocumentSorter    from '../lib/safeDocumentSorter';
 import safeDocumentMatcher   from '../lib/safeDocumentMatcher';
 import safeDocumentProjector from '../lib/safeDocumentProjector';
 
-import Help    from './Help';
-import View    from './View';
-import Query   from './Query';
-import Table   from './Table';
-import Result  from './Result';
-import Sidebar from './Sidebar';
-import Toolbar from './Toolbar';
+import Help          from './Help';
+import View          from './View';
+import Query         from './Query';
+import Result        from './Result';
+import Methods       from './Methods';
+import Sidebar       from './Sidebar';
+import Toolbar       from './Toolbar';
+import Subscriptions from './Subscriptions';
 
 export default class MiniMongoExplorer extends Component {
     static propTypes = {
@@ -28,10 +29,13 @@ export default class MiniMongoExplorer extends Component {
 
         dispatch: PropTypes.func.isRequired,
 
-        isHelpVisible:    PropTypes.bool.isRequired,
-        isReactive:       PropTypes.bool.isRequired,
-        isSidebarVisible: PropTypes.bool.isRequired,
-        isTableVisible:   PropTypes.bool.isRequired,
+        isHelpView:          PropTypes.bool.isRequired,
+        isMethodsView:       PropTypes.bool.isRequired,
+        isReactive:          PropTypes.bool.isRequired,
+        isSidebarView:       PropTypes.bool.isRequired,
+        isSubscriptionsView: PropTypes.bool.isRequired,
+
+        methods: PropTypes.arrayOf(PropTypes.string).isRequired,
 
         mode: PropTypes.number.isRequired,
 
@@ -60,47 +64,51 @@ export default class MiniMongoExplorer extends Component {
         <section className="window">
             <section className="window-content">
                 <section className="pane-group">
-                    {this.props.isSidebarVisible && (
+                    {this.props.isSidebarView && (
                         <Sidebar collections={this.getCollections()} onTabOpen={this.onTabOpen} />
                     )}
 
-                    {this.props.isHelpVisible
+                    {this.props.isHelpView
                         ? <Help />
-                        : this.props.isTableVisible
-                            ? <Table data={this.props.subscriptions} />
-                            : (tab =>
-                                <View
-                                    onTabClose={this.onTabClose}
-                                    onTabSelect={this.onTabSelect}
-                                    tab={this.props.tab}
-                                    tabs={this.props.tabs}
-                                >
-                                    {tab && (
-                                        <Query error={tab.error} query={tab.query} onQuery={this.onQuery} />
-                                    )}
+                        : this.props.isSubscriptionsView
+                            ? <Subscriptions data={this.props.subscriptions} />
+                            : this.props.isMethodsView
+                                ? <Methods methods={this.props.methods} />
+                                : (tab =>
+                                    <View
+                                        onTabClose={this.onTabClose}
+                                        onTabSelect={this.onTabSelect}
+                                        tab={this.props.tab}
+                                        tabs={this.props.tabs}
+                                    >
+                                        {tab && (
+                                            <Query error={tab.error} query={tab.query} onQuery={this.onQuery} />
+                                        )}
 
-                                    {tab && (
-                                        <Result data={tab.result} mode={this.props.mode} />
-                                    )}
-                                </View>
-                            )(this.getTab())
+                                        {tab && (
+                                            <Result data={tab.result} mode={this.props.mode} />
+                                        )}
+                                    </View>
+                                )(this.getTab())
                     }
                 </section>
             </section>
 
             <Toolbar
-                isHelpVisible={this.props.isHelpVisible}
+                isHelpView={this.props.isHelpView}
+                isMethodsView={this.props.isMethodsView}
                 isReactive={this.props.isReactive}
-                isSidebarVisible={this.props.isSidebarVisible}
-                isTableVisible={this.props.isTableVisible}
+                isSidebarView={this.props.isSidebarView}
+                isSubscriptionsView={this.props.isSubscriptionsView}
                 mode={this.props.mode}
                 onRefresh={this.onRefresh}
                 onTabClose={this.onTabClose}
                 onToggleHelp={this.onToggleHelp}
+                onToggleMethods={this.onToggleMethods}
                 onToggleMode={this.onToggleMode}
                 onToggleReactivity={this.onToggleReactivity}
                 onToggleSidebar={this.onToggleSidebar}
-                onToggleTable={this.onToggleTable}
+                onToggleSubscriptions={this.onToggleSubscriptions}
             />
         </section>
     ;
@@ -108,9 +116,10 @@ export default class MiniMongoExplorer extends Component {
 
 
     getCollections = () =>
-        Object.keys(this.props.snapshot)
-            .sort((a, b) => a.localeCompare(b))
-            .map(collection => ({ name: collection, count: Object.keys(this.props.snapshot[collection]).length }));
+        Object.keys(this.props.snapshot).sort().map(collection => ({
+            name: collection,
+            count: Object.keys(this.props.snapshot[collection]).length
+        }));
     ;
 
     getId = doc =>
@@ -135,6 +144,7 @@ export default class MiniMongoExplorer extends Component {
                 limit = Math.max(0, parsed.limit);
             }
         } catch (_) {
+            limit = 50;
             error = true;
         }
 
@@ -193,9 +203,10 @@ export default class MiniMongoExplorer extends Component {
         this.props.dispatch({
             tab:  id,
             tabs: this.props.tabs.concat({ id, ...this.getResult(collection) }),
-            isHelpVisible:  false,
-            isTableVisible: false
-        })
+            isHelpView:  false,
+            isMethodsView: false,
+            isSubscriptionsView: false
+        });
     };
 
     onTabSelect = id =>
@@ -206,8 +217,17 @@ export default class MiniMongoExplorer extends Component {
 
     onToggleHelp = previous =>
         this.props.dispatch({
-            isHelpVisible: !previous,
-            isTableVisible: false
+            isHelpView: !previous,
+            isMethodsView: false,
+            isSubscriptionsView: false
+        })
+    ;
+
+    onToggleMethods = previous =>
+        this.props.dispatch({
+            isHelpView: false,
+            isMethodsView: !previous,
+            isSubscriptionsView: false
         })
     ;
 
@@ -225,14 +245,15 @@ export default class MiniMongoExplorer extends Component {
 
     onToggleSidebar = previous =>
         this.props.dispatch({
-            isSidebarVisible: !previous
+            isSidebarView: !previous
         })
     ;
 
-    onToggleTable = previous =>
+    onToggleSubscriptions = previous =>
         this.props.dispatch({
-            isHelpVisible: false,
-            isTableVisible: !previous
+            isHelpView: false,
+            isMethodsView: false,
+            isSubscriptionsView: !previous
         })
     ;
 }

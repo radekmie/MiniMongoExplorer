@@ -14,6 +14,7 @@
 - limiting fields
 - live sorting
 - live querying
+- methods listing
 - multiple tabs
 - subscriptions listing
 - object inspector mode

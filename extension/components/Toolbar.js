@@ -4,28 +4,30 @@ import { PropTypes } from 'react';
 import translations from '../assets/translations/en';
 
 const Toolbar = ({
-    isHelpVisible,
+    isHelpView,
+    isMethodsView,
     isReactive,
-    isSidebarVisible,
-    isTableVisible,
+    isSidebarView,
+    isSubscriptionsView,
     mode,
     onRefresh,
     onTabClose,
     onToggleHelp,
+    onToggleMethods,
     onToggleMode,
     onToggleReactivity,
     onToggleSidebar,
-    onToggleTable
+    onToggleSubscriptions
 }) =>
     <section className="toolbar toolbar-footer">
         <section className="toolbar-actions">
             <section className="btn-group">
                 <button
                     className="btn btn-default btn-mini"
-                    onClick={() => onToggleSidebar(isSidebarVisible)}
-                    title={isSidebarVisible ? translations.sidebar.hide : translations.sidebar.show}
+                    onClick={() => onToggleSidebar(isSidebarView)}
+                    title={isSidebarView ? translations.sidebar.hide : translations.sidebar.show}
                 >
-                    <i className={`icon icon-${isSidebarVisible ? 'left' : 'right'}`} />
+                    <i className={`icon icon-${isSidebarView ? 'left' : 'right'}`} />
                 </button>
 
                 <button
@@ -71,37 +73,47 @@ const Toolbar = ({
             </a>
 
             <button
-                className={`btn btn-default btn-mini pull-right${isHelpVisible ? ' active' : ''}`}
-                onClick={() => onToggleHelp(isHelpVisible)}
+                className={`btn btn-default btn-mini pull-right${isHelpView ? ' active' : ''}`}
+                onClick={() => onToggleHelp(isHelpView)}
                 title={translations.help.toggle}
             >
                 <i className="icon icon-lifebuoy" />
             </button>
 
             <button
-                className={`btn btn-default btn-mini pull-right${isTableVisible ? ' active' : ''}`}
-                onClick={() => onToggleTable(isTableVisible)}
-                title={translations.table.toggle}
+                className={`btn btn-default btn-mini pull-right${isSubscriptionsView ? ' active' : ''}`}
+                onClick={() => onToggleSubscriptions(isSubscriptionsView)}
+                title={translations.subscriptions.toggle}
             >
                 <i className="icon icon-cloud-thunder" />
+            </button>
+
+            <button
+                className={`btn btn-default btn-mini pull-right${isMethodsView ? ' active' : ''}`}
+                onClick={() => onToggleMethods(isMethodsView)}
+                title={translations.methods.toggle}
+            >
+                <i className="icon icon-direction" />
             </button>
         </section>
     </section>
 ;
 
 Toolbar.propTypes = {
-    isHelpVisible:      PropTypes.bool.isRequired,
-    isReactive:         PropTypes.bool.isRequired,
-    isSidebarVisible:   PropTypes.bool.isRequired,
-    isTableVisible:     PropTypes.bool.isRequired,
-    mode:               PropTypes.number.isRequired,
-    onRefresh:          PropTypes.func.isRequired,
-    onTabClose:         PropTypes.func.isRequired,
-    onToggleHelp:       PropTypes.func.isRequired,
-    onToggleMode:       PropTypes.func.isRequired,
-    onToggleReactivity: PropTypes.func.isRequired,
-    onToggleSidebar:    PropTypes.func.isRequired,
-    onToggleTable:      PropTypes.func.isRequired
+    isHelpView:            PropTypes.bool.isRequired,
+    isMethodsView:         PropTypes.bool.isRequired,
+    isReactive:            PropTypes.bool.isRequired,
+    isSidebarView:         PropTypes.bool.isRequired,
+    isSubscriptionsView:   PropTypes.bool.isRequired,
+    mode:                  PropTypes.number.isRequired,
+    onRefresh:             PropTypes.func.isRequired,
+    onTabClose:            PropTypes.func.isRequired,
+    onToggleHelp:          PropTypes.func.isRequired,
+    onToggleMethods:       PropTypes.func.isRequired,
+    onToggleMode:          PropTypes.func.isRequired,
+    onToggleReactivity:    PropTypes.func.isRequired,
+    onToggleSidebar:       PropTypes.func.isRequired,
+    onToggleSubscriptions: PropTypes.func.isRequired
 };
 
 export default Toolbar;

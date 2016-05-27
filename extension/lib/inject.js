@@ -95,6 +95,34 @@ export default '(' + function (ADD, CHA, DEL, NEW, REM, SET) {
             },
             {
                 hook: function (run) {
+                    this.interval = setInterval(run, 10000);
+                },
+
+                stop: function () {
+                    if (this.interval) {
+                        clearInterval(this.interval);
+                        this.interval = undefined;
+                    }
+                },
+
+                data: function () {
+                    var methods = Meteor.connection._methodHandlers;
+                    if (methods) {
+                        methods = Object.keys(methods).sort();
+                    } else {
+                        methods = [];
+                    }
+
+                    return {
+                        type: SET,
+                        payload: {
+                            methods: methods
+                        }
+                    };
+                }
+            },
+            {
+                hook: function (run) {
                     if (snapshotTracker) {
                         var subscriptions = Meteor.connection._subscriptions;
                         if (subscriptions) {

@@ -1,3 +1,8 @@
+### v1.2.0
+- devtools: methods listing
+- devtools: monospace font in subcriptions listing
+- devtools: natural sort of collections and subscriptions
+
 ### v1.1.3
 - devtools: prevent panel duplication
 

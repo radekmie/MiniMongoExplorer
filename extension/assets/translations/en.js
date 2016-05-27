@@ -11,6 +11,11 @@ export default {
         'Switch to object mode'
     ],
 
+    methods: {
+        name: 'Method',
+        toggle: 'Toggle methods'
+    },
+
     reactivity: {
         disable: 'Disable reactivity',
         enable:  'Enable reactivity'
@@ -21,11 +26,11 @@ export default {
         show: 'Show sidebar'
     },
 
-    table: {
+    subscriptions: {
         name:   'Subscription',
         params: 'Params',
         ready:  'Is ready',
-        toggle: 'Toggle subscriptions table'
+        toggle: 'Toggle subscriptions'
     },
 
     ui: {
