@@ -1,4 +1,4 @@
-# MiniMongoExplorer
+# Meteor MiniMongo Explorer
 
 ### Handy Google Chrome extension for reviewing MiniMongo.
 

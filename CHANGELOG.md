@@ -1,3 +1,6 @@
+### v1.2.1
+- devtools: renamed to Meteor MiniMongo Explorer
+
 ### v1.2.0
 - devtools: methods listing
 - devtools: monospace font in subcriptions listing
