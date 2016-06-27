@@ -16,7 +16,7 @@ export default class Help extends Component {
                         <span className="nav-group-item"><i className="icon icon-stop" /> {translations.reactivity.disable}</span>
                         <span className="nav-group-item"><i className="icon icon-lifebuoy" /> {translations.help.toggle}</span>
                         <span className="nav-group-item"><i className="icon icon-cloud-thunder" /> {translations.subscriptions.toggle}</span>
-                        <span className="nav-group-item"><i className="icon icon-navigation" /> {translations.methods.toggle}</span>
+                        <span className="nav-group-item"><i className="icon icon-direction" /> {translations.methods.toggle}</span>
                         <span className="nav-group-item"><i className="icon icon-newspaper" /> {translations.mode[0]}</span>
                         <span className="nav-group-item"><i className="icon icon-menu" /> {translations.mode[1]}</span>
                         <span className="nav-group-item"><i className="icon icon-quote" /> {translations.mode[2]}</span>
