@@ -1,3 +1,9 @@
+### v1.2.3
+- devtools: subscriptions are now sorted
+
+### v1.2.2
+- devtools: fixed subscriptions icon
+
 ### v1.2.1
 - devtools: renamed to Meteor MiniMongo Explorer
 
