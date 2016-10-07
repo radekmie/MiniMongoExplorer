@@ -16,7 +16,7 @@ const Subscriptions = ({ data }) =>
             </thead>
 
             <tbody>
-                {Object.keys(data).sort().map(subscription =>
+                {Object.keys(data).sort((a, b) => data[a].name.localeCompare(data[b].name)).map(subscription =>
                     <tr key={subscription}>
                         <td>
                             <code>{data[subscription].name}</code>
