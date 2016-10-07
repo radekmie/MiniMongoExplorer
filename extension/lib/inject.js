@@ -156,7 +156,9 @@ export default '(' + function (ADD, CHA, DEL, NEW, REM, SET) {
                     if (subscriptions) {
                         subscriptions = Object
                             .keys(subscriptions)
-                            .sort()
+                            .sort(function (a, b) {
+                                return subscriptions[a].name.localeCompare(subscriptions[b].name);
+                            })
                             .reduce(function (snapshot, subscription) {
                                 snapshot[subscription] = {
                                     name:   subscriptions[subscription].name,

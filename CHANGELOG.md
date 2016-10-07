@@ -1,3 +1,6 @@
+### v1.2.4
+- devtools: improved subscriptions sorting
+
 ### v1.2.3
 - devtools: subscriptions are now sorted
 
