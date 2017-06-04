@@ -1,7 +1,7 @@
-import 'file?name=manifest.json!./manifest.json';
-import 'file?name=images/icon16.png!../extension/assets/images/icon16.png';
-import 'file?name=images/icon32.png!../extension/assets/images/icon32.png';
-import 'file?name=images/icon64.png!../extension/assets/images/icon64.png';
+import 'file-loader?name=manifest.json!./manifest.json';
+import 'file-loader?name=images/icon16.png!../extension/assets/images/icon16.png';
+import 'file-loader?name=images/icon32.png!../extension/assets/images/icon32.png';
+import 'file-loader?name=images/icon64.png!../extension/assets/images/icon64.png';
 
 import { NEW } from '../extension/lib/reduxConstants';
 

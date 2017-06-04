@@ -8,9 +8,9 @@ export default ({ directory, entry, pages = [] }) => ({
     output: { path: join(__dirname, 'build', directory), filename: '[name].js' },
     module: {
         loaders: [
-            { exclude: /node_modules/, loader: 'url',       test: /\.woff$/ },
-            { exclude: /node_modules/, loader: 'babel',     test: /\.js$/ },
-            { exclude: /node_modules/, loader: 'style!css', test: /\.css$/ }
+            { exclude: /node_modules/, loader: 'url-loader',              test: /\.woff$/ },
+            { exclude: /node_modules/, loader: 'babel-loader',            test: /\.js$/ },
+            { exclude: /node_modules/, loader: 'style-loader!css-loader', test: /\.css$/ }
         ]
     },
 
@@ -30,7 +30,6 @@ export default ({ directory, entry, pages = [] }) => ({
             sourceMap: false
         }),
         new webpack.optimize.OccurrenceOrderPlugin(),
-        new webpack.optimize.DedupePlugin(),
 
         ...pages.map(chunk => new HTMLPlugin({
             title: null,

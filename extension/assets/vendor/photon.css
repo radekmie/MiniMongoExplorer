@@ -1,7 +1,7 @@
 /*!
  * =====================================================
  * Photon v0.1.2
- * Copyright 2015 Connor Sears
+ * Copyright 2016 Connor Sears
  * Licensed under MIT (https://github.com/connors/proton/blob/master/LICENSE)
  *
  * v0.1.2 designed by @connors.
@@ -122,8 +122,24 @@ th {
 
 * {
   cursor: default;
-  -webkit-user-drag: text;
   -webkit-user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+}
+
+form,
+input,
+optgroup,
+select,
+textarea {
+  -webkit-user-select: text;
+  -webkit-app-region: no-drag;
+}
+
+* {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
@@ -303,6 +319,10 @@ h6 {
   -webkit-app-region: drag;
 }
 
+.not-draggable {
+  -webkit-app-region: no-drag;
+}
+
 .clearfix:before, .clearfix:after {
   display: table;
   content: " ";
@@ -447,7 +467,7 @@ h6 {
 .btn-dropdown:after {
   font-family: "photon-entypo";
   margin-left: 5px;
-  content: "";
+  content: '\e873';
 }
 
 .btn-group {
@@ -596,7 +616,7 @@ input[type="checkbox"] {
 }
 .form-control:focus {
   border-color: #6db3fd;
-  box-shadow: 3px 3px 0 #6db3fd, -3px -3px 0 #6db3fd, -3px 3px 0 #6db3fd, 3px -3px 0 #6db3fd;
+  box-shadow: 0 0 0 3px #6db3fd;
 }
 
 textarea {
@@ -673,6 +693,7 @@ textarea {
 
 .pane-one-third {
   width: 33.3%;
+  flex: none;
 }
 
 img {

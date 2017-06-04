@@ -2,6 +2,8 @@ import React               from 'react';
 import { PropTypes }       from 'react';
 import { ObjectInspector } from 'react-inspector';
 
+import theme from '../lib/theme';
+
 import translations from '../assets/translations/en';
 
 const Subscriptions = ({ data }) =>
@@ -28,7 +30,7 @@ const Subscriptions = ({ data }) =>
                             }
                         </td>
                         <td>
-                            <ObjectInspector data={data[subscription].params} />
+                            <ObjectInspector data={data[subscription].params} theme={theme} />
                         </td>
                     </tr>
                 )}

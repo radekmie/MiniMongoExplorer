@@ -1,3 +1,7 @@
+### v1.3
+- devtools: improved performance
+- devtools: reduced extension size
+
 ### v1.2.5
 - devtools: improved subscriptions sorting
 

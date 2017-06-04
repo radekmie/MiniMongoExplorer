@@ -3,6 +3,8 @@ import { PropTypes }       from 'react';
 import { TableInspector }  from 'react-inspector';
 import { ObjectInspector } from 'react-inspector';
 
+import theme from '../lib/theme';
+
 const columns = data => {
     for (let property in data) {
         return Object.keys(data[property]).filter(column => column !== '_id');
@@ -12,12 +14,12 @@ const columns = data => {
 const Result = ({ data, mode }) =>
     <section className="pane-scroll">
         {mode === 0 && (
-            <ObjectInspector data={data} expandLevel={1} />
+            <ObjectInspector data={data} expandLevel={1} theme={theme} />
         )}
 
         {mode === 1 && (
             <section>
-                <TableInspector data={data} columns={columns(data)} />
+                <TableInspector data={data} columns={columns(data)} theme={theme} />
             </section>
         )}
 
