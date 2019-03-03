@@ -1,5 +1,9 @@
 @import '../assets/vendor/photon.css';
 
+* {
+    -webkit-user-select: unset;
+}
+
 pre {
     margin: 0;
 }
@@ -99,10 +103,6 @@ td {
     overflow: auto;
 
     white-space: pre;
-}
-
-.pane-scroll * {
-    -webkit-user-select: initial;
 }
 
 .pane-scroll pre {

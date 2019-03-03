@@ -1,3 +1,7 @@
+### v1.3.1
+- devtools: enabled selection
+- devtools: enabled reactive mode by default
+
 ### v1.3
 - devtools: improved performance
 - devtools: reduced extension size

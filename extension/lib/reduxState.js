@@ -4,7 +4,7 @@ export default () => ({
 
     isHelpView: true,
     isMethodsView: false,
-    isReactive: false,
+    isReactive: true,
     isSidebarView: true,
     isSubscriptionsView: false,
 
